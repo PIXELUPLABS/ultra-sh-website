@@ -449,6 +449,9 @@
       sliders[key] = { input, sync };
       sync(true);
       input.addEventListener('input', () => { sync(); update(); });   // keyboard
+      // keyboard focus mark: only after a key press here, cleared by the pointer or on leaving
+      input.addEventListener('keydown', () => wrap.classList.add('is-kb'));
+      input.addEventListener('blur', () => wrap.classList.remove('is-kb'));
 
       const pAt = (e) => { const r = track.getBoundingClientRect(); return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); };
       const snapTo = (p) => {
@@ -462,6 +465,7 @@
         drag = { id: e.pointerId, moved: false };
         try { ctl.setPointerCapture(e.pointerId); } catch (err) { /* pointer already gone */ }
         input.focus({ preventScroll: true });
+        wrap.classList.remove('is-kb');
         wrap.classList.add('is-active');
         const p = pAt(e);
         snapTo(p);

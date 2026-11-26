@@ -591,7 +591,9 @@ html.lenis, html.lenis body { height: auto; }
 }
 .slider input::-webkit-slider-thumb { -webkit-appearance: none; width: 1.8rem; height: 4.4rem; }
 .slider input::-moz-range-thumb { width: 1.8rem; height: 4.4rem; border: 0; }
-.slider__ctl:has(input:focus-visible) .slider__track { outline: 2px solid #0a0a0a; outline-offset: 0.4rem; }
+/* no outline round the track: keyboard focus (is-kb, set by main.js only while the arrow keys are in
+   use, never after a click or drag) shows as a lime glow round the playhead instead */
+.slider.is-kb .slider__head { filter: drop-shadow(0 0 0.1rem #a5ba21) drop-shadow(0 0 0.6rem rgba(208, 239, 14, 0.85)); }
 .slider__out {
   flex: none; width: 8.4rem; display: flex; justify-content: flex-end; white-space: nowrap;
   font: 400 1.2rem/normal var(--f-sans); color: rgba(10, 10, 10, 0.6);
@@ -757,22 +759,8 @@ html.lenis, html.lenis body { height: auto; }
   font: 400 1.2rem/1.6rem var(--f-sans); text-transform: uppercase; color: rgba(0, 0, 0, 0.8); white-space: nowrap;
 }
 .tile__top--mono { font-family: var(--f-mono); }
-/* relationship tag: a small mono chip with a square marker (lime for partners, black for investors);
-   on hover it fills black with lime type, like the nav links */
-.tile__tag {
-  flex: none; display: inline-flex; align-items: center; gap: 0.6rem; height: 2.2rem; padding: 0 0.8rem 0 0.7rem;
-  font: 500 1.1rem/1 var(--f-mono); letter-spacing: 0.06em; color: rgba(0, 0, 0, 0.75);
-  background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 0.2rem;
-  transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
-}
-.tile__tag::before {
-  content: ""; flex: none; width: 0.6rem; height: 0.6rem;
-  background: var(--lime); box-shadow: inset 0 0 0 1px rgba(114, 127, 34, 0.55);
-  transition: background-color 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
-}
-.tile__tag--investor::before { background: #0a0a0a; box-shadow: none; }
-.tile:hover .tile__tag, .tile:focus-visible .tile__tag { background: #0a0a0a; border-color: #0a0a0a; color: var(--lime); }
-.tile:hover .tile__tag::before, .tile:focus-visible .tile__tag::before { background: var(--lime); box-shadow: none; }
+/* relationship (Partner / Investor): plain text at the top left, set like the tile's top line */
+.tile__tag { display: block; }
 .tile__brand { display: flex; align-items: center; gap: 1.2rem; }
 .tile:nth-child(2) .tile__brand img { width: 3rem; height: 2.93878rem; }
 .tile:nth-child(3) .tile__brand img { width: 9.03059rem; height: 2.8rem; }
@@ -1091,7 +1079,6 @@ main { position: relative; z-index: 2; background: #000; }
   /* partner tiles: name and mark scaled to the half-width tile (SERVER ran past its edge) */
   .tile__name { font-size: 1.8rem; }
   .tile__brand { gap: 0.8rem; }
-  .tile__top { flex-direction: column; align-items: flex-start; gap: 0.8rem; }   /* the tag under the domain: side by side ran out of room */
   .tile:nth-child(2) .tile__brand img { width: 2.4rem; height: 2.351rem; }
   .tile:nth-child(3) .tile__brand img { width: 7.226rem; height: 2.24rem; }
   .tile:nth-child(4) .tile__brand img, .tile:nth-child(5) .tile__brand img { width: 2.4rem; height: 2.4rem; }
