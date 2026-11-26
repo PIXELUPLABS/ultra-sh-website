@@ -786,15 +786,15 @@ html.lenis, html.lenis body { height: auto; }
 .cta__img3 { position: absolute; height: 100%; left: -17.71%; top: 0; width: 133.17%; }
 .cta__shade { position: absolute; inset: 0; width: 100%; height: 100%; }
 /* same placement as the 1920×1080 export it replaces: 800px tall, nudged 17.71% left */
-/* live CTA field: from the art column's left edge to the grid's right border, and down through the
-   black notch (80rem art + 9.7rem notch); the polygon follows the notch's diagonal end, so the pattern
-   stops exactly where the lime footer begins */
+/* live CTA field: from the art column's left edge right out to the page's edge (no black margin beside
+   the grid), and down through the black notch (80rem art + 9.7rem notch); the polygon follows the
+   notch's diagonal end, so the pattern stops exactly where the lime footer begins */
 .cta__grid { z-index: 2; }
 .cta__notch { z-index: 0; }
 .cta__field {
-  position: absolute; z-index: 1; left: 37.2rem; top: 0; width: 104.4rem; height: 89.8rem;
+  position: absolute; z-index: 1; left: 37.2rem; right: 0; top: 0; height: 89.8rem;
   overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.6s ease;
-  clip-path: polygon(0 0.1rem, 104.3rem 0.1rem, 104.3rem 80.1rem, 85.55rem 80.1rem, 76.586rem 89.75rem, 0 89.75rem);
+  clip-path: polygon(0 0.1rem, 100% 0.1rem, 100% 80.1rem, 85.55rem 80.1rem, 76.586rem 89.75rem, 0 89.75rem);
 }
 .cta__field.is-live { opacity: 1; }
 .cta__field .glyph-live { left: 0; top: 0; width: 100%; height: 100%; opacity: 1; }
@@ -1013,7 +1013,7 @@ main { position: relative; z-index: 2; background: #000; }
 
   .cta { padding: 0 1.6rem; }
   .cta__bg { left: 0; width: 100%; height: 100%; }
-  .cta__field { left: 1.6rem; width: calc(100% - 3.2rem); height: 100%; clip-path: inset(0.1rem); }
+  .cta__field { left: 1.6rem; right: 0; width: auto; height: 100%; clip-path: inset(0.1rem 0 0.1rem 0.1rem); }   /* out to the right edge */
   .cta__top { height: auto; }
   /* flex: 1 + min-width 0, so the sentence wraps to the column (as a fixed-basis item it took its one-line
      width, 454px on a phone, and ran off the screen) */
