@@ -726,10 +726,20 @@ html.lenis, html.lenis body { height: auto; }
   font: 400 14px/normal var(--f-plex); letter-spacing: 0.08em;
   opacity: 0; transform: translate(calc(-100% + 0.6rem), -50%); transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
+/* leader down from the node, only when the label row sits lower than the node (js/why-art.js placeRow) */
+.why-co__drop {
+  position: absolute; width: 1px; margin-left: -0.5px; background: rgba(255, 255, 255, 0.75);
+  transform: scaleY(0); transform-origin: center top; transition: transform 0.3s cubic-bezier(0.6, 0, 0.2, 1);
+}
 .why-co.is-on .why-co__node--near { opacity: 1; transform: scale(1); }
+.why-co.is-on .why-co__drop { transform: scaleY(1); transition-delay: 100ms; }
 .why-co.is-on .why-co__line { transform: scaleX(1); transition-delay: 120ms; }
 .why-co.is-on .why-co__node--far { opacity: 1; transform: scale(1); transition-delay: 450ms; }
 .why-co.is-on .why-co__tag { opacity: 0.85; transform: translate(-100%, -50%); transition-delay: 520ms; }
+/* with a leader the line waits for it, and the far end follows on */
+.why-co.is-on.has-drop .why-co__line { transition-delay: 360ms; }
+.why-co.is-on.has-drop .why-co__node--far { transition-delay: 690ms; }
+.why-co.is-on.has-drop .why-co__tag { transition-delay: 760ms; }
 @media (prefers-reduced-motion: reduce) {
   .why__art [data-part], .why__art [data-part] * { animation: none !important; }
   .why-co * { transition: none !important; }
@@ -851,6 +861,13 @@ main { position: relative; z-index: 2; background: #000; }
 .footer__title { width: 100%; }
 .footer__btn-wrap { padding-right: 3.2rem; }
 .footer__logo { width: 26.8rem; height: 26rem; }
+/* desktop: the footer is one screen tall but sized in rem (the window's width), so a wide window leaves
+   the box less height than the design (about 52rem at 1920×1080 against 68rem at 1440×900). The logo
+   gives up height first, drawn smaller at its corner, so the button above never runs into it */
+@media (min-width: 901px) {
+  .footer__brand-top { flex: 1 0 auto; }
+  .footer__logo { flex: 0 1 26rem; height: auto; min-height: 8rem; object-fit: contain; object-position: left bottom; }
+}
 .footer__nav {
   flex: 1; min-width: 0; padding: 10.4rem 2.4rem 2.4rem;
   display: flex; flex-direction: column; justify-content: flex-end;

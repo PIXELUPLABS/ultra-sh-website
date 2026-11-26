@@ -196,18 +196,26 @@
      lime node on the part to a lime node further left, the label beyond it. They draw in once the part
      is up and fold away as it settles. */
   const CALLOUTS = [
-    { part: 'cpu', i: 0, text: 'AMD EPYC 4005', at: [850, 212], to: 600 },
-    { part: 'ram', i: 0, text: '0 GB shared RAM', at: [745, 212], to: 572 },
+    // nodes on the middle of each part's front face (cooler: y 204–352 at x 850; RAM bank: 232–312 at
+    // x 745), not its top edge: the top of the drawing is what a wide window crops, under the nav
+    // room: how far (units) the node may slide down and still be on that face (see placeRow)
+    { part: 'cpu', i: 0, text: 'AMD EPYC 4005', at: [850, 270], to: 600, room: 60 },
+    { part: 'ram', i: 0, text: '0 GB shared RAM', at: [745, 272], to: 572, room: 36 },
     // its label ends left of the chassis' top-left edge, which crosses the label's height near x 480
-    { part: 'fan', i: 0, text: 'Fans · watched 24/7', at: [566, 332], to: 450 },
+    { part: 'fan', i: 0, text: 'Fans · watched 24/7', at: [566, 332], to: 450, room: 20 },
   ];
+  const pct = (v, of) => `${((v / of) * 100).toFixed(4)}%`;
   const callouts = CALLOUTS.map((c, n) => {
     const co = document.createElement('div');
     co.className = 'why-co';
     co.setAttribute('aria-hidden', 'true');
     const [x, y] = c.at;
-    const pct = (v, of) => `${((v / of) * 100).toFixed(4)}%`;
-    // the line is a 1px element (crisp at every size), drawn out from the part's node to the left
+    // the lines are 1px elements (crisp at every size): a drop straight down from the part's node (only
+    // when the label row has to sit lower, see placeRow), then the line out to the left
+    const drop = document.createElement('i');
+    drop.className = 'why-co__drop';
+    Object.assign(drop.style, { left: pct(x, W), top: pct(y, H), height: '0%' });
+    co.appendChild(drop);
     const line = document.createElement('i');
     line.className = 'why-co__line';
     Object.assign(line.style, { left: pct(c.to, W), width: pct(x - c.to, W), top: pct(y, H) });
@@ -217,16 +225,41 @@
       s.className = `why-co__node ${cls}`;
       s.style.left = pct(cx, W); s.style.top = pct(y, H);
       co.appendChild(s);
+      return s;
     };
-    node(x, 'why-co__node--near'); node(c.to, 'why-co__node--far');
+    const near = node(x, 'why-co__node--near');
+    const far = node(c.to, 'why-co__node--far');
     const tag = document.createElement('span');
     tag.className = 'why-co__tag';
     tag.style.left = pct(c.to - 10, W); tag.style.top = pct(y, H);
     tag.textContent = c.text;
     co.appendChild(tag);
     art.appendChild(co);
-    return { ...c, n, co, tag, on: false };
+    return { ...c, n, co, tag, near, row: [line, far, tag], drop, on: false };
   });
+  /* Keep each callout clear of the sticky nav. The section is held centred on screen, so a window wider
+     than the design (16:9 and up) crops the top of the drawing, and labels lifted with their parts can
+     land under the nav. Only then: the node slides down its part (up to `room` units, still on the same
+     face), and if the label still needs to go lower, the row drops below the nav with a short leader
+     down from the node. Measured when a callout opens (the drawing is held still then) and on resize;
+     at the design's 16:10 nothing moves. */
+  const nav = document.querySelector('.nav');
+  const placeRow = (c) => {
+    const r = art.getBoundingClientRect(), k = r.width / W;
+    if (!k) return;
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 10;
+    const navH = nav ? nav.offsetHeight : 0;
+    // frame y (at rest) that lands at window y `px` once the part is up
+    const at = (px) => (px - r.top) / k + RISE[c.part];
+    const y = c.at[1];
+    const nodeY = y + Math.max(0, Math.min(c.room || 0, at(navH + 1.2 * rem) - y));
+    const rowY = Math.max(nodeY, Math.min(nodeY + 160, at(navH + Math.max(24, 2.4 * rem))));
+    c.near.style.top = pct(nodeY, H);
+    c.drop.style.top = pct(nodeY, H);
+    c.drop.style.height = pct(rowY - nodeY, H);
+    c.row.forEach((e) => { e.style.top = pct(rowY, H); });
+    c.co.classList.toggle('has-drop', rowY - nodeY > 0.5);
+  };
   // the drawing's scale against its 2012-unit frame (css sizes the labels with it on tablet / phone) and
   // the room each label has left of its far node before the section's edge (it wraps beyond that)
   const sizeCallouts = () => {
@@ -235,6 +268,7 @@
     callouts.forEach((c) => {
       const room = art.offsetLeft + ((c.to - 10) / W) * w - 8;
       c.tag.style.setProperty('--tag-max', `${Math.max(40, Math.round(room))}px`);
+      if (c.on) placeRow(c);
     });
   };
   sizeCallouts();
@@ -242,6 +276,7 @@
   const showCallout = (c, on) => {
     if (c.on === on) return;
     c.on = on;
+    if (on) placeRow(c);
     c.co.classList.toggle('is-on', on);
     if (!window.gsap) return;
     gsap.killTweensOf(c.tag);
