@@ -550,22 +550,30 @@ html.lenis, html.lenis body { height: auto; }
 }
 .slider__track {
   position: absolute; left: 0; top: 3rem; width: var(--w); height: 1.4rem; overflow: hidden;
-  background: rgba(10, 10, 10, 0.04); border: 1px solid rgba(10, 10, 10, 0.16); border-radius: 0.3rem;
+  background: rgba(10, 10, 10, 0.035); border: 1px solid rgba(10, 10, 10, 0.1); border-radius: 0.4rem;
+  box-shadow: inset 0 1px 0.2rem rgba(10, 10, 10, 0.05);
 }
-/* the fill is drawn like the lime blocks in the Why Ultra illustration: the #e2f663 top face, fine
-   diagonal hatching in its olive line colour, a 1px edge and a darker side face along the bottom. The
-   hatching is fixed to the track (it doesn't stretch as the fill grows) and drifts while you drag. */
+/* the fill: a lime bar set 0.2rem inside the rail, in the illustration's lime, fading in from the start
+   and full strength at the playhead. Faint ticks on it line up with the ruler's twelfths above (tiles
+   one twelfth of the track wide, offset by the inset). A light sweep runs along it while you drag. */
 .slider__fill {
-  position: absolute; left: -1px; top: -1px; bottom: -1px; width: calc(var(--p) * var(--w) + 1px);
-  border-radius: 0.3rem;
+  position: absolute; left: 0.2rem; top: 0.2rem; bottom: 0.2rem;
+  width: max(0px, calc(var(--p) * var(--w) - 0.2rem - 1px));
+  border-radius: 0.2rem; overflow: hidden;
   background:
-    linear-gradient(135deg, transparent 0 42%, rgba(114, 127, 34, 0.3) 42% 50%, transparent 50% 92%, rgba(114, 127, 34, 0.3) 92%) 0 0 / 0.9rem 0.9rem,
-    linear-gradient(90deg, #d7ee45, #e2f663 6rem);
-  box-shadow: inset 0 0 0 1px #9dae30, inset 0 -0.3rem 0 #abbf2d;
+    linear-gradient(90deg, rgba(114, 127, 34, 0.22) 0 1px, transparent 1px) calc(-0.2rem - 1px) 0 / calc(var(--wh, var(--w)) / 12) 100% repeat-x,
+    linear-gradient(90deg, rgba(226, 246, 99, 0.45), #e2f663 55%, #d6f02c);
+  box-shadow: inset 0 0 0 1px rgba(157, 174, 48, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: filter 0.3s ease;
 }
-.slider.is-active .slider__fill { animation: slider-hatch 0.6s linear infinite; }
-@keyframes slider-hatch { to { background-position: 0.9rem 0, 0 0; } }
-@media (prefers-reduced-motion: reduce) { .slider.is-active .slider__fill { animation: none; } }
+.slider__fill::after {
+  content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s ease;
+  background: linear-gradient(100deg, transparent 0 35%, rgba(255, 255, 255, 0.6) 50%, transparent 65%) -100% 0 / 60% 100% no-repeat;
+}
+.slider.is-active .slider__fill { filter: saturate(1.15) brightness(1.02); }
+.slider.is-active .slider__fill::after { opacity: 1; animation: slider-sheen 1.2s ease-in-out infinite; }
+@keyframes slider-sheen { from { background-position: -100% 0; } to { background-position: 250% 0; } }
+@media (prefers-reduced-motion: reduce) { .slider.is-active .slider__fill::after { animation: none; opacity: 0; } }
 /* moved with a transform, not `left`, so it glides at sub-pixel precision instead of snapping pixel to pixel */
 .slider__head {
   position: absolute; left: 0; top: 1rem; width: 3rem; height: 5.6rem; pointer-events: none;
@@ -749,8 +757,22 @@ html.lenis, html.lenis body { height: auto; }
   font: 400 1.2rem/1.6rem var(--f-sans); text-transform: uppercase; color: rgba(0, 0, 0, 0.8); white-space: nowrap;
 }
 .tile__top--mono { font-family: var(--f-mono); }
-.tile__tag { display: flex; align-items: center; gap: 0.4rem; }
-.tile__tag::before, .tile__tag::after { content: ""; width: 1px; height: 1rem; background: rgba(0, 0, 0, 0.6); }
+/* relationship tag: a small mono chip with a square marker (lime for partners, black for investors);
+   on hover it fills black with lime type, like the nav links */
+.tile__tag {
+  flex: none; display: inline-flex; align-items: center; gap: 0.6rem; height: 2.2rem; padding: 0 0.8rem 0 0.7rem;
+  font: 500 1.1rem/1 var(--f-mono); letter-spacing: 0.06em; color: rgba(0, 0, 0, 0.75);
+  background: rgba(255, 255, 255, 0.35); border: 1px solid rgba(0, 0, 0, 0.12); border-radius: 0.2rem;
+  transition: background-color 0.35s var(--ease-out), color 0.35s var(--ease-out), border-color 0.35s var(--ease-out);
+}
+.tile__tag::before {
+  content: ""; flex: none; width: 0.6rem; height: 0.6rem;
+  background: var(--lime); box-shadow: inset 0 0 0 1px rgba(114, 127, 34, 0.55);
+  transition: background-color 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+}
+.tile__tag--investor::before { background: #0a0a0a; box-shadow: none; }
+.tile:hover .tile__tag, .tile:focus-visible .tile__tag { background: #0a0a0a; border-color: #0a0a0a; color: var(--lime); }
+.tile:hover .tile__tag::before, .tile:focus-visible .tile__tag::before { background: var(--lime); box-shadow: none; }
 .tile__brand { display: flex; align-items: center; gap: 1.2rem; }
 .tile:nth-child(2) .tile__brand img { width: 3rem; height: 2.93878rem; }
 .tile:nth-child(3) .tile__brand img { width: 9.03059rem; height: 2.8rem; }
@@ -1069,6 +1091,7 @@ main { position: relative; z-index: 2; background: #000; }
   /* partner tiles: name and mark scaled to the half-width tile (SERVER ran past its edge) */
   .tile__name { font-size: 1.8rem; }
   .tile__brand { gap: 0.8rem; }
+  .tile__top { flex-direction: column; align-items: flex-start; gap: 0.8rem; }   /* the tag under the domain: side by side ran out of room */
   .tile:nth-child(2) .tile__brand img { width: 2.4rem; height: 2.351rem; }
   .tile:nth-child(3) .tile__brand img { width: 7.226rem; height: 2.24rem; }
   .tile:nth-child(4) .tile__brand img, .tile:nth-child(5) .tile__brand img { width: 2.4rem; height: 2.4rem; }
