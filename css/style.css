@@ -260,7 +260,10 @@ html.lenis, html.lenis body { height: auto; }
   letter-spacing: -0.192rem; text-transform: uppercase; color: #fff;
 }
 .gpu__title .dim { color: rgba(255, 255, 255, 0.4); }
-.gpu__fig { position: absolute; left: 32rem; top: 9.8rem; width: 41.9rem; height: 54.4rem; }
+.gpu__fig { position: absolute; left: 32rem; top: 9.8rem; width: 41.9rem; height: 54.4rem; perspective: 150rem; }
+/* hover tilt (js/gpu-fx.js): the drawing turns toward the cursor in 3D, its layers spread apart in depth */
+.gpu__tilt { position: absolute; inset: 0; transform-style: preserve-3d; }
+.gpu__depth { position: absolute; inset: 0; }
 .gpu__layer { position: absolute; inset: 0; }
 /* GPU motion (js/gpu-fx.js): live fan blades in the shroud's plane, and a glow while on screen */
 .gpu__fanfx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -549,7 +552,20 @@ html.lenis, html.lenis body { height: auto; }
   position: absolute; left: 0; top: 3rem; width: var(--w); height: 1.4rem; overflow: hidden;
   background: rgba(10, 10, 10, 0.04); border: 1px solid rgba(10, 10, 10, 0.16); border-radius: 0.3rem;
 }
-.slider__fill { position: absolute; left: -1px; top: -1px; bottom: -1px; width: calc(var(--p) * var(--w)); background: rgba(10, 10, 10, 0.09); border-radius: 0.3rem; }
+/* the fill is drawn like the lime blocks in the Why Ultra illustration: the #e2f663 top face, fine
+   diagonal hatching in its olive line colour, a 1px edge and a darker side face along the bottom. The
+   hatching is fixed to the track (it doesn't stretch as the fill grows) and drifts while you drag. */
+.slider__fill {
+  position: absolute; left: -1px; top: -1px; bottom: -1px; width: calc(var(--p) * var(--w) + 1px);
+  border-radius: 0.3rem;
+  background:
+    linear-gradient(135deg, transparent 0 42%, rgba(114, 127, 34, 0.3) 42% 50%, transparent 50% 92%, rgba(114, 127, 34, 0.3) 92%) 0 0 / 0.9rem 0.9rem,
+    linear-gradient(90deg, #d7ee45, #e2f663 6rem);
+  box-shadow: inset 0 0 0 1px #9dae30, inset 0 -0.3rem 0 #abbf2d;
+}
+.slider.is-active .slider__fill { animation: slider-hatch 0.6s linear infinite; }
+@keyframes slider-hatch { to { background-position: 0.9rem 0, 0 0; } }
+@media (prefers-reduced-motion: reduce) { .slider.is-active .slider__fill { animation: none; } }
 /* moved with a transform, not `left`, so it glides at sub-pixel precision instead of snapping pixel to pixel */
 .slider__head {
   position: absolute; left: 0; top: 1rem; width: 3rem; height: 5.6rem; pointer-events: none;
@@ -605,8 +621,9 @@ html.lenis, html.lenis body { height: auto; }
 .plans__table tbody td { font: 400 1.6rem/normal var(--f-mono); color: #0a0a0a; }
 .plans__table tbody tr { cursor: pointer; transition: background-color 0.35s var(--ease-out); }
 .plans__table tbody tr:first-child { border-bottom: 1px solid rgba(10, 10, 10, 0.08); }
-.plans__table tbody tr:hover { background: rgba(10, 10, 10, 0.03); }
-.plans__table tbody tr.is-on { background: #a5ba21; }
+/* the picked size reads in the illustration's lime (the #e2f663 top face of its blocks), hover in a tint of it */
+.plans__table tbody tr:hover { background: rgba(226, 246, 99, 0.3); }
+.plans__table tbody tr.is-on { background: #e2f663; }
 .plans__table tbody tr.is-on td { color: #141414; }
 .saving {
   flex: none; width: 45.2rem; display: flex; flex-direction: column; justify-content: space-between; white-space: nowrap;

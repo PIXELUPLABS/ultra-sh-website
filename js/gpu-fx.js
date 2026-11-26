@@ -21,6 +21,61 @@
     if (onScreen) kick();
   }, { threshold: 0.15 }).observe(fig);
 
+  /* Hover tilt (mouse / pen only): near the drawing it turns a few degrees toward the cursor, as a 3D
+     object would, and its layers part in depth (shroud nearest, base furthest), so they slide past one
+     another as it turns. It eases in, follows the cursor with a little lag, and settles flat when the
+     cursor moves away. Hit-testing uses the figure's own box (not the tilted parts), so it never jitters. */
+  const tiltEl = fig.querySelector('.gpu__tilt');
+  const section = fig.closest('[data-gpu-section]') || fig.parentElement;
+  if (tiltEl && !reduce) {
+    const Z = { base: -3, plate: -1.2, fins: 0.6, pipes: 2.2, shroud: 4.6, callouts: 1.6 };   // rem toward the viewer
+    const MAX_Y = 11, MAX_X = 8;                                                                 // deg
+    const depths = [...fig.querySelectorAll('[data-depth]')];
+    const cur = { x: 0, y: 0, s: 0 }, tgt = { x: 0, y: 0, s: 0 };
+    const clamp = (v) => Math.max(-1, Math.min(1, v));
+    let traf = 0, tlast = 0, px = null, py = null;
+    const apply = () => {
+      if (cur.s < 0.001 && Math.abs(cur.x) < 0.001 && Math.abs(cur.y) < 0.001) {
+        tiltEl.style.transform = '';                    // at rest: no 3D layers, the art renders as drawn
+        depths.forEach((d) => { d.style.transform = ''; });
+        return;
+      }
+      tiltEl.style.transform = `rotateX(${(-cur.y * MAX_X).toFixed(3)}deg) rotateY(${(cur.x * MAX_Y).toFixed(3)}deg)`;
+      depths.forEach((d) => { d.style.transform = `translateZ(${((Z[d.dataset.depth] || 0) * cur.s).toFixed(3)}rem)`; });
+    };
+    const step = (now) => {
+      const dt = Math.min(0.05, (now - tlast) / 1000); tlast = now;
+      const k = 1 - Math.exp(-dt * 7);                  // ~0.11 a frame at 60 Hz
+      let moving = false;
+      ['x', 'y', 's'].forEach((p) => {
+        cur[p] += (tgt[p] - cur[p]) * k;
+        if (Math.abs(tgt[p] - cur[p]) > 0.0005) moving = true; else cur[p] = tgt[p];
+      });
+      apply();
+      traf = moving ? requestAnimationFrame(step) : 0;
+    };
+    const run = () => { if (!traf) { tlast = performance.now(); traf = requestAnimationFrame(step); } };
+    const aim = () => {
+      if (px === null) return;
+      const r = fig.getBoundingClientRect();
+      const padX = r.width * 0.35, padY = r.height * 0.15;
+      const near = px > r.left - padX && px < r.right + padX && py > r.top - padY && py < r.bottom + padY;
+      if (near) {
+        tgt.x = clamp((px - (r.left + r.width / 2)) / (r.width / 2 + padX));
+        tgt.y = clamp((py - (r.top + r.height / 2)) / (r.height / 2 + padY));
+        tgt.s = 1;
+      } else { tgt.x = tgt.y = tgt.s = 0; }
+      run();
+    };
+    section.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      px = e.clientX; py = e.clientY; aim();
+    }, { passive: true });
+    section.addEventListener('pointerleave', () => { px = py = null; tgt.x = tgt.y = tgt.s = 0; run(); });
+    // the page can scroll under a still cursor (the section is pinned while it plays): re-aim then too
+    window.addEventListener('scroll', aim, { passive: true });
+  }
+
   // absolute path data (M L H V C Q Z) → segments of absolute points
   function parsePath(d) {
     const tk = d.match(/[A-Za-z]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/g) || [];

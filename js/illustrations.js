@@ -219,16 +219,27 @@
 
   const gpu = document.querySelector('[data-gpu]');
   if (gpu) {
+    // fig > tilt (turned on hover by js/gpu-fx.js) > one depth wrapper per layer (pushed apart in z on
+    // hover) > the layer (moved by the scroll timeline in main.js). Each has its own element so the
+    // hover transforms and the scroll transforms never write to the same one.
+    const tilt = document.createElement('div');
+    tilt.className = 'gpu__tilt';
+    gpu.prepend(tilt);
     const groups = {};
+    // DOM order = paint order (base first)
     ['base', 'plate', 'fins', 'pipes', 'shroud'].forEach((g) => {
+      const depth = document.createElement('div');
+      depth.className = 'gpu__depth';
+      depth.dataset.depth = g;
       const el = document.createElement('div');
       el.className = 'gpu__layer';
       el.dataset.layer = g;
       groups[g] = el;
-      gpu.prepend(el);
+      depth.appendChild(el);
+      tilt.appendChild(depth);
     });
-    // keep DOM order = paint order (base first)
-    ['base', 'plate', 'fins', 'pipes', 'shroud'].forEach((g) => gpu.insertBefore(groups[g], gpu.querySelector('.gpu__callouts')));
+    const callouts = gpu.querySelector('.gpu__callouts');
+    if (callouts) { callouts.dataset.depth = 'callouts'; tilt.appendChild(callouts); }
     const count = {};
     GPU.forEach(([f, layer, x, y, w, h, bleed]) => {
       const el = document.createElement('span');
