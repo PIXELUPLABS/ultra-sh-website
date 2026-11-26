@@ -1,0 +1,1072 @@
+/* =========================================================
+   Ultra.sh — landing page
+   Units: 1rem = 10px at a 1440px viewport (root is scaled
+   by JS on desktop), so every rem value = Figma px / 10.
+   ========================================================= */
+
+@font-face {
+  font-family: "Bounded";
+  src: local("Bounded"), url("../assets/fonts/bounded-variable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --lime: #d0ef0e;
+  --lime-2: #d2f113;
+  --cream: #ecede1;
+  --ink: #010101;
+  --line: rgba(255, 255, 255, 0.2);
+  --line-soft: rgba(255, 255, 255, 0.15);
+  --line-dark: rgba(0, 0, 0, 0.14);
+  --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-io: cubic-bezier(0.77, 0, 0.175, 1);
+  --f-sans: "Geist", system-ui, sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, monospace;
+  --f-plex: "IBM Plex Mono", ui-monospace, monospace;
+  --f-display: "Bounded", "Unbounded", "Geist", sans-serif;
+}
+
+html { font-size: calc(100vw / 144); -webkit-text-size-adjust: 100%; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #000;
+  color: #fff;
+  font-family: var(--f-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  transition: opacity 0.4s ease;
+}
+html.is-loading body { opacity: 0; }
+img { display: block; max-width: none; }
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+::selection { background: var(--lime); color: #000; }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ---------- shared atoms ---------- */
+.ln { position: absolute; background: var(--line); pointer-events: none; }
+.ln--h { left: 0; right: 0; height: 1px; transform-origin: left center; }
+.ln--v { width: 1px; transform-origin: center top; }
+.node {
+  position: absolute; width: 0.7rem; height: 0.7rem;
+  background: #d9d9d9; border: 1px solid #333;
+}
+.pc { position: absolute; display: block; }
+.pc > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pc__b { position: absolute; display: block; }
+.pc__b > img { width: 100%; height: 100%; }
+.rot { position: relative; flex: none; display: block; }
+.rot > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.eyebrow {
+  display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0;
+  font: 400 1.2rem/1.2rem var(--f-sans); text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85); white-space: nowrap;
+}
+.eyebrow img { width: 2rem; height: 2rem; }
+.eyebrow--dark { color: rgba(0, 0, 0, 0.85); }
+.eyebrow-wrap { padding: 0.4rem 0; }
+
+.display {
+  font-family: var(--f-display); font-weight: 500;
+  font-size: 5.6rem; line-height: 1.2; letter-spacing: -0.224rem;
+  text-transform: uppercase; color: #fff;
+}
+.display .dim { color: rgba(255, 255, 255, 0.4); }
+.display--dark { color: #000; }
+.display--dark .dim { color: rgba(0, 0, 0, 0.55); }
+.display .dim3 { color: #676767; }
+.display--right { text-align: right; }
+/* 11 leading spaces in the design: 11 × (space advance − tracking) */
+.ind { display: inline-block; width: 2.475em; }
+
+/* split-word reveal */
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.w__i { display: inline-block; }
+
+/* ---------- buttons (webisoft-style wipe + scramble + icon swap) ---------- */
+.btn {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 32.2rem; padding: 0.6rem 1.2rem;
+  border: 1px solid #fff; color: #f5f5f5;
+  font: 500 1.4rem/normal var(--f-mono); text-transform: uppercase; white-space: nowrap;
+  transition: color 0.45s var(--ease-out), border-color 0.45s var(--ease-out);
+}
+.btn--sm { width: 30.9rem; padding: 0.6rem 0.8rem; }
+.btn__fill {
+  position: absolute; inset: -1px; z-index: -1;
+  background: var(--lime);
+  transform: scaleX(0); transform-origin: right center;
+  transition: transform 0.6s var(--ease-io);
+}
+.btn__label { position: relative; }
+.btn__icon { position: relative; flex: none; width: 1.6rem; height: 0.8rem; overflow: hidden; }
+.btn__icon i {
+  position: absolute; right: 0; top: 0; width: 0.8rem; height: 0.8rem;
+  background: currentColor;
+  transition: transform 0.5s var(--ease-out);
+}
+.btn--sm .btn__icon i { width: 0.8222rem; height: 0.8222rem; }
+.btn--sm .btn__icon { height: 0.8222rem; }
+.btn__icon i:nth-child(2) { transform: translateX(-260%); }
+.btn:hover, .btn:focus-visible { color: #000; border-color: var(--lime); }
+.btn:hover .btn__fill, .btn:focus-visible .btn__fill { transform: scaleX(1); transform-origin: left center; }
+.btn:hover .btn__icon i:nth-child(1), .btn:focus-visible .btn__icon i:nth-child(1) { transform: translateX(260%); }
+.btn:hover .btn__icon i:nth-child(2), .btn:focus-visible .btn__icon i:nth-child(2) { transform: translateX(0); transition-delay: 0.08s; }
+.btn:active { transform: scale(0.985); }
+.btn:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+
+.btn--dark {
+  width: 100%; height: 4rem; padding: 0 1.6rem;
+  border-color: #000; color: #000;
+  font: 500 1.4rem/normal var(--f-mono);
+}
+.btn--dark .btn__fill { background: #000; }
+.btn--dark .btn__icon { height: 0.6rem; }
+.btn--dark .btn__icon i { width: 0.6rem; height: 0.6rem; }
+.btn--dark .btn__icon i:nth-child(2) { transform: translateX(-360%); }
+.btn--dark:hover .btn__icon i:nth-child(1), .btn--dark:focus-visible .btn__icon i:nth-child(1) { transform: translateX(360%); }
+.btn--dark:hover, .btn--dark:focus-visible { color: var(--lime); border-color: #000; }
+.btn--dark:focus-visible { outline-color: #000; }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 50; background: #000;
+  transition: transform 0.6s var(--ease-io);
+}
+.nav.is-hidden { transform: translateY(-100%); }
+.nav__inner {
+  display: flex; align-items: center; height: 5.5rem; padding: 0 2.4rem;
+  border-bottom: 1px solid var(--line);
+}
+.nav__logo {
+  display: grid; place-items: center; width: 5.4rem; height: 5.4rem; flex: none;
+  background: var(--lime); overflow: hidden;
+  transition: background-color 0.35s var(--ease-out);
+}
+.nav__logo img { width: 2.89427rem; height: 2.89829rem; }
+.nav__logo:hover, .nav__logo:focus-visible { background-color: #fff; }
+.nav__links { display: flex; height: 5.4rem; }
+/* nav links share the button hover: lime wipe + brand-letter scramble */
+.nav__link {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; gap: 0.3rem;
+  padding: 0 3.2rem; border-right: 1px solid var(--line);
+  font: 500 1.4rem/1 var(--f-mono); letter-spacing: -0.02778rem; text-transform: uppercase; color: #fff;
+  white-space: nowrap;
+  transition: color 0.45s var(--ease-out);
+}
+.nav__link:first-child { border-left: 1px solid var(--line); }
+.nav__fill {
+  position: absolute; inset: 0; z-index: -1; background: var(--lime);
+  transform: scaleX(0); transform-origin: right center;
+  transition: transform 0.6s var(--ease-io);
+}
+.nav__link:hover, .nav__link:focus-visible { color: #000; }
+.nav__link:hover .nav__fill, .nav__link:focus-visible .nav__fill { transform: scaleX(1); transform-origin: left center; }
+.nav__txt { position: relative; }
+.nav__ext { position: relative; width: 0.902344rem; height: 0.902344rem; transition: transform 0.45s var(--ease-out), filter 0.45s var(--ease-out); }
+.nav__link:hover .nav__ext, .nav__link:focus-visible .nav__ext { transform: translate(0.2rem, -0.2rem); filter: invert(1); }
+.nav__link:focus-visible { outline: none; }
+
+/* ---------- 01 hero ---------- */
+.hero { position: relative; height: 80rem; overflow: hidden; border-bottom: 1px solid var(--line); background: #000; }
+.hero__pattern { position: absolute; left: 37.3rem; top: 33rem; width: 106.7rem; height: 53.8rem; opacity: 0.7; }
+.hero__pattern img { width: 100%; height: 100%; }
+
+/* live Beam Loop glyph fields (hero + CTA); the static artwork shows until WebGL2 takes over */
+.glyph-live { position: absolute; display: block; opacity: 0; transition: opacity 0.6s ease; }
+[data-glyph-host].is-live .glyph-live { opacity: 1; }
+/* same stepped silhouette as the original artwork (its alpha mask): a block at the top-left, then
+   the full width from 21.19% down; also limits hover to that shape. 0.7 = the artwork's baked alpha */
+/* the library blocks touch on interactive fields; keep page scrolling on touch-screen laptops */
+.glyph-live { touch-action: pan-y !important; }
+/* the canvas is drawn 1:1 in device pixels; at fractional page offsets the browser would otherwise
+   resample it bilinearly and soften every glyph by half a pixel */
+.glyph-live { image-rendering: pixelated; }
+.hero__pattern .glyph-live {
+  inset: 0; width: 100%; height: 100%;
+  clip-path: polygon(0 0, 21.51% 0, 21.51% 21.19%, 100% 21.19%, 100% 100%, 0 100%);
+}
+.hero__pattern.is-live .glyph-live { opacity: 0.8; }   /* thinner strokes at 16px cells; matches the art's brightness */
+.hero__pattern.is-live img { visibility: hidden; }
+.hero__glow {
+  position: absolute; left: 25.724rem; top: 25.284rem; width: 154.804rem; height: 74.907rem;
+  display: flex; align-items: center; justify-content: center;
+  mix-blend-mode: overlay; pointer-events: none;
+}
+.hero__glow .rot { width: 34.6854rem; height: 151.0914rem; transform: rotate(-74.03deg); }
+.hero__bar { position: absolute; left: 141.7rem; top: -4.5rem; width: 13.7rem; height: 25.4rem; transform-origin: top; }
+.hero__mark { position: absolute; left: 3.6rem; top: 3.2rem; width: 102rem; height: 14.6rem; }
+.hero__mark .mask { display: block; width: 100%; height: 100%; overflow: hidden; }
+.hero__mark img { width: 100%; height: 100%; }
+.hero__coords {
+  position: absolute; left: 79.1rem; top: 21rem; width: 27.7rem; padding: 1.2rem;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem;
+  font: 400 1.2rem/normal var(--f-mono); letter-spacing: 0.024rem; text-transform: uppercase; white-space: nowrap;
+}
+.hero__coords p { opacity: 0.5; }
+.hero__cta { position: absolute; left: 108.1rem; top: 39.4rem; }
+.hero__info { position: absolute; left: 3.6rem; top: 65.7rem; width: 17.4rem; display: flex; flex-direction: column; align-items: flex-start; gap: 3.3rem; }
+.hero__tags { font: 400 1.2rem/1.4 var(--f-mono); letter-spacing: -0.036rem; text-transform: uppercase; white-space: nowrap; }
+.hero__layers { width: 3.94885rem; height: 4.41342rem; }
+
+/* ---------- gpu statement ---------- */
+/* z-index + visible overflow so the side pattern can run down to the "02" grid line below */
+.gpu { position: relative; z-index: 1; height: 90rem; background: #000; overflow: visible; }
+.gpu__side { position: absolute; left: 22.4rem; top: 17.1rem; width: 14.9rem; height: 76.9rem; background: #000; overflow: hidden; }
+.gs { position: absolute; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
+.gs--a { left: 5.689rem; top: 37.579rem; width: 28.1203rem; height: 124.0239rem; }
+.gs--a .rot { width: 124.0239rem; height: 28.1203rem; transform: rotate(-90deg); }
+.gs--b { left: 18.384rem; top: 42.568rem; width: 40.6738rem; height: 80.6672rem; }
+.gs--b .rot { width: 80.6672rem; height: 40.6738rem; transform: rotate(90deg); }
+/* top fade: the pattern rises out of the black. Solid for the first 9rem (the pillar starts a little
+   below the grid line), then a long eased fade (many stops, so no band shows where it ends) that has
+   let the pattern fully in by 50rem down */
+.gs--d {
+  left: 0; top: 0; width: 100%; height: 50rem; transform: none;
+  background: linear-gradient(to bottom,
+    #000 0, #000 9rem, rgba(0, 0, 0, 0.97) 26%, rgba(0, 0, 0, 0.91) 33%, rgba(0, 0, 0, 0.82) 40%, rgba(0, 0, 0, 0.71) 47%,
+    rgba(0, 0, 0, 0.58) 55%, rgba(0, 0, 0, 0.45) 63%, rgba(0, 0, 0, 0.32) 71%, rgba(0, 0, 0, 0.2) 79%,
+    rgba(0, 0, 0, 0.1) 87%, rgba(0, 0, 0, 0.03) 94%, rgba(0, 0, 0, 0) 100%);
+}
+/* live glyph field in place of the static pattern; the top fade stays above it, the cursor glow between */
+.gpu__side .gs, .gpu__side .side-glow { pointer-events: none; }
+.gpu__side .glyph-live { inset: 0; width: 100%; height: 100%; }
+.gpu__side.is-live .gs--b { visibility: hidden; }
+.side-glow { position: absolute; inset: 0; width: 100%; height: 100%; display: block; mix-blend-mode: screen; }
+.gpu__glow {
+  position: absolute; left: 14rem; top: 35.7rem; width: 26.8399rem; height: 32.9229rem;
+  display: flex; align-items: center; justify-content: center; mix-blend-mode: overlay; pointer-events: none;
+}
+.gpu__glow .rot { width: 28.5977rem; height: 19.735rem; transform: rotate(-74.03deg); }
+.gpu__spec {
+  position: absolute; left: 37.4rem; top: 11.3rem; padding: 1.2rem;
+  font: 400 1.2rem/1.4 var(--f-mono); letter-spacing: -0.036rem; text-transform: uppercase; white-space: nowrap;
+}
+.gpu__spec span { display: block; }
+.gpu__stage { position: absolute; left: 36.6rem; top: 17.4rem; width: 104.2rem; height: 72.6rem; }
+.gpu__title {
+  position: absolute; left: 6.6rem; top: 24.7rem; width: 91rem;
+  font-family: var(--f-display); font-weight: 500; font-size: 4.8rem; line-height: 1.2;
+  letter-spacing: -0.192rem; text-transform: uppercase; color: #fff;
+}
+.gpu__title .dim { color: rgba(255, 255, 255, 0.4); }
+.gpu__fig { position: absolute; left: 32rem; top: 9.8rem; width: 41.9rem; height: 54.4rem; }
+.gpu__layer { position: absolute; inset: 0; }
+/* GPU motion (js/gpu-fx.js): live fan blades in the shroud's plane, and a glow while on screen */
+.gpu__fanfx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.gpu__fig.is-playing [data-layer="fins"] .pc { animation: gpu-fin 2.6s ease-in-out infinite; animation-delay: calc(var(--k) * 0.08s); }
+@keyframes gpu-fin {
+  0%, 38%, 100% { filter: none; }
+  14% { filter: brightness(1.9) drop-shadow(0 0 0.5rem rgba(226, 246, 99, 0.55)); }
+}
+.gpu__fig.is-playing [data-layer="pipes"] .pc { animation: gpu-pipe 1.8s ease-in-out infinite; }
+@keyframes gpu-pipe { 50% { filter: brightness(1.22) drop-shadow(0 0 0.9rem rgba(226, 246, 99, 0.45)); } }
+@media (prefers-reduced-motion: reduce) { .gpu__fig [data-layer] .pc { animation: none !important; } }
+.gpu__callouts { position: absolute; inset: 0; pointer-events: none; }
+.callout {
+  position: absolute; width: 0.8rem; transform-origin: center bottom;
+  background:
+    linear-gradient(var(--lime), var(--lime)) 0.1rem 0 / 0.6rem 0.6rem no-repeat,
+    linear-gradient(var(--lime), var(--lime)) 0.1rem 100% / 0.6rem 0.6rem no-repeat;
+}
+.callout::before { content: ""; position: absolute; left: 0.35rem; top: 0.6rem; bottom: 0.6rem; width: 1px; background: rgba(255, 255, 255, 0.3); }
+.gpu__lbl {
+  position: absolute; white-space: nowrap; opacity: 0.75;
+  font: 400 12px/normal var(--f-plex); letter-spacing: 0.08em;   /* callout labels: 12px on desktop */
+  transform: translateX(-50%);   /* each label is centred on its callout line (left = the line's x) */
+}
+/* a label above its line hangs from its bottom edge, so a bigger label grows away from the node */
+.gpu__lbl--up { transform: translate(-50%, -100%); }
+
+/* ---------- 02 by the numbers ---------- */
+.stats { position: relative; height: 91.9rem; background: #000; border-bottom: 1px solid var(--line); overflow: hidden; }
+.stats__wrap { position: absolute; left: 2.4rem; right: 2.4rem; top: 0; display: flex; align-items: flex-start; }
+.stats__lead { flex: 1; min-width: 0; padding: 4rem 1.2rem; }
+.stats__grid {
+  flex: none; width: 104.2rem; height: 77.6rem; padding: 4rem 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+.stat {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 1.6rem; padding: 1.2rem;
+  border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+  transition: background-color 0.5s var(--ease-out);
+}
+.stat:nth-child(-n + 3) { border-top: 1px solid var(--line-soft); }
+.stat:hover { background-color: rgba(255, 255, 255, 0.025); }
+/* hover glow (Figma 2112:3178): a faint grey glyph field shows through a soft spot that follows the
+   cursor, heavy glyphs near its centre and light ones (dots, slashes) further out, over a whisper of
+   lime. The two glyph tiles are drawn by main.js (--glyph-heavy / --glyph-light on the grid). */
+.stat__glow { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.6s ease; }
+.stat:hover .stat__glow { opacity: 1; }
+.stat__glow i { position: absolute; inset: 0; background-position: 0 0; }
+.stat__glow-tint { background: radial-gradient(circle 16rem at var(--mx, 75%) var(--my, 22%), rgba(208, 239, 14, 0.035), transparent 70%); }
+.stat__glow-light, .stat__glow-heavy { background-size: 11.7rem 11.7rem; }
+/* both tiles share one 1.3rem grid, so the heavy glyphs at the centre hand over to the light ones in place */
+.stat__glow-light {
+  background-image: var(--glyph-light); opacity: 0.16;
+  -webkit-mask-image: radial-gradient(circle 13rem at var(--mx, 75%) var(--my, 22%), transparent 0, transparent 16%, #000 42%, rgba(0, 0, 0, 0.45) 68%, transparent 100%);
+  mask-image: radial-gradient(circle 13rem at var(--mx, 75%) var(--my, 22%), transparent 0, transparent 16%, #000 42%, rgba(0, 0, 0, 0.45) 68%, transparent 100%);
+}
+.stat__glow-heavy {
+  background-image: var(--glyph-heavy); opacity: 0.2;
+  -webkit-mask-image: radial-gradient(circle 7rem at var(--mx, 75%) var(--my, 22%), #000 0, #000 30%, transparent 100%);
+  mask-image: radial-gradient(circle 7rem at var(--mx, 75%) var(--my, 22%), #000 0, #000 30%, transparent 100%);
+}
+@media (hover: none) { .stat__glow { display: none; } }
+.stat__icon { position: absolute; left: 1.15rem; top: 1.2rem; width: 2.53203rem; height: 2.53203rem; transition: transform 0.7s var(--ease-io); }
+.stat:hover .stat__icon { transform: rotate(90deg); }
+.stat__value { position: relative; font: 400 5.6rem/1.1 var(--f-sans); letter-spacing: -0.224rem; white-space: nowrap; }
+.stat__cap { position: relative; opacity: 0.8; font: 500 1.2rem/1.6rem var(--f-sans); text-transform: uppercase; }
+.stat__sub { opacity: 0.6; padding-left: 1rem; }
+
+/* ---------- 03 the problem ---------- */
+.problem { position: relative; background: var(--ink); padding: 0 2.4rem 12rem; display: flex; flex-direction: column; align-items: flex-end; }
+.sec-head { display: flex; border-bottom: 1px solid var(--line); }
+.sec-head__lead { flex: none; width: 20rem; padding: 8.8rem 1.2rem 2.4rem; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.sec-head__title { flex: none; width: 119.2rem; padding: 8.8rem 1.2rem 8.8rem 15rem; }
+.sec-head .display { width: 92.8rem; }
+
+.pcards { width: 100%; }
+.pcard { position: relative; background: var(--ink); }
+.pcards.is-stacking .pcard { position: sticky; top: calc(var(--i) * 8.8rem); }
+/* Staggered margins keep every card's header row visible until the whole stack leaves:
+   card k may only travel until its margin box hits the container bottom, so giving earlier cards
+   a larger bottom margin (cancelled in layout by the next card's negative top margin) makes the
+   stack scroll away as one block instead of later cards sliding over earlier headers. */
+.pcards.is-stacking .pcard { margin-bottom: calc((2 - var(--i)) * 8.8rem); }
+.pcards.is-stacking .pcard + .pcard { margin-top: calc((var(--i) - 3) * 8.8rem); }
+.pcard + .pcard { border-top: 1px solid var(--line); }
+.pcard--last { border-bottom: 1px solid var(--line); }
+.pcard__in { position: relative; display: flex; }
+.pcard__main { flex: 1; min-width: 0; display: flex; }
+.pcard__num {
+  flex: none; width: 20rem; padding: 4rem 1.2rem;
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+  font: 400 1.2rem/1.6rem var(--f-sans); color: rgba(255, 255, 255, 0.45); white-space: nowrap;
+}
+.pcard__art {
+  flex: 1; min-width: 0; height: 54rem; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  /* 9px grid, inset one cell from every edge so no grid line sits against the card borders */
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 39.904%, #000 100%) 0 0 / 100% 100% no-repeat,
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 0.9rem) 0.9rem 0.9rem / calc(100% - 1.8rem) calc(100% - 0.9rem) no-repeat,
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 0.9rem) 0.9rem 0.9rem / calc(100% - 1.8rem) calc(100% - 0.9rem) no-repeat,
+    var(--ink);
+}
+/* illustration ("pill"): the Figma SVG, inlined by js/problem-cards.js so its parts can move on hover */
+.pill { position: relative; flex: none; }
+.pcard:nth-child(1) .pill { width: 28.0882rem; height: 30.2784rem; }
+.pcard:nth-child(2) .pill { width: 38.2977rem; height: 27.0704rem; }
+.pcard:nth-child(3) .pill { width: 31.1939rem; height: 27.6783rem; }
+.pill > img, .pill__svg { display: block; width: 100%; height: 100%; }
+.pill__svg { overflow: visible; }
+/* playing effects, on while the card is in view (reference: ultra-unwatched-card) */
+.pill .lamp, .pill .flow, .pill .fin-light { opacity: 0; }
+.pill .scan { opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+.is-playing .pill .scan { opacity: 1; }
+.is-playing .pill .lamp { animation: pill-blink var(--d, 1.2s) steps(1, end) var(--o, 0s) infinite; }
+.is-playing .pill .led { animation: pill-blink var(--d, 1.2s) steps(1, end) var(--o, 0s) infinite; }
+@keyframes pill-blink { 0% { opacity: 1; } 55% { opacity: 0; } }
+.is-playing .pill .flow { opacity: 1; animation: pill-flow .9s linear infinite; }
+@keyframes pill-flow { to { stroke-dashoffset: -32; } }
+.is-playing .pill .fin-light { animation: pill-chase 1.2s linear infinite; animation-delay: calc(var(--k) * .2s); }
+@keyframes pill-chase { 0%, 18% { opacity: .95; } 40%, 100% { opacity: 0; } }
+.is-playing .pill .chip { animation: pill-chip 1.6s ease-in-out infinite; }
+@keyframes pill-chip { 50% { fill: #FFE892; } }
+/* callouts, hover / focus only: a straight white 1px line to the left or right, 6px lime nodes at both ends,
+   the IBM Plex Mono label beyond the end node. Animated like the reference: near node pops, line draws out,
+   end node pops, label slides in; all reverse on hover-out. Geometry lives in js/problem-cards.js. */
+.pco { position: absolute; inset: 0; pointer-events: none; }
+.pco__svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pco__line { stroke: #fff; stroke-width: 1; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset .45s cubic-bezier(.6, 0, .2, 1); }
+.pco__node { fill: #D0EF0E; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(.4);
+  transition: opacity .2s ease, transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.pco__tag { position: absolute; white-space: nowrap; color: #fff; text-transform: uppercase;
+  font: 400 12px/normal var(--f-plex); letter-spacing: 0.08em;   /* callout labels: 12px on desktop */
+  opacity: 0; transition: opacity .25s ease, transform .35s cubic-bezier(.2, .7, .2, 1); }
+.pco__tag--right { transform: translate(-0.6rem, -50%); }
+.pco__tag--left { transform: translate(calc(-100% + 0.6rem), -50%); }
+.is-hover .pco__node--near { opacity: 1; transform: scale(1); transition-delay: var(--d); }
+.is-hover .pco__line { stroke-dashoffset: 0; transition-delay: calc(var(--d) + 120ms); }
+.is-hover .pco__node--far { opacity: 1; transform: scale(1); transition-delay: calc(var(--d) + 450ms); }
+.is-hover .pco__tag { opacity: .75; transition-delay: calc(var(--d) + 520ms); }
+.is-hover .pco__tag--right { transform: translate(0, -50%); }
+.is-hover .pco__tag--left { transform: translate(-100%, -50%); }
+@media (prefers-reduced-motion: reduce) {
+  .pco * { transition: none !important; }
+  .pill * { animation: none !important; }
+}
+.pcard__copy {
+  flex: none; width: 58rem; padding: 4rem 2.4rem;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+}
+.pcard__title { width: 45.6rem; font: 500 3.2rem/1.2 var(--f-sans); letter-spacing: -0.16rem; color: #ecebf0; }
+.pcard__title .dim { color: rgba(236, 235, 240, 0.4); }
+.pcard__title .dim2 { color: #5f5f61; }
+.pcard__foot { display: flex; flex-direction: column; align-items: flex-start; gap: 2.4rem; }
+.pcard__text { width: 30.9rem; font: 400 1.6rem/1.34 var(--f-sans); letter-spacing: -0.016rem; color: #ecebf0; text-wrap: balance; }
+.pcard__text--wide { width: 45.6rem; }
+.pcard__shade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+
+/* each notch overhangs its section's edge by 2px: scaled (and flipped), the image's outer pixel row is
+   only partly opaque, and at the section edge the black behind showed through it as a dark hairline
+   between the cream band and the cream notch. The overhang is clipped, so the edge row is solid cream */
+.notch { position: absolute; width: 46.4rem; height: calc(8.4rem + 2px); pointer-events: none; }
+.notch--bl { left: 0; bottom: -2px; }
+.notch--tl { left: 0; top: -2px; transform: scaleY(-1); }
+
+/* ---------- 04 cpu performance + 05 calculator (light bands) ---------- */
+.lsec { position: relative; background: var(--cream); color: #0a0a0a; padding: 6rem 2.4rem; }
+.lsec__head { display: flex; border: 1px solid rgba(10, 10, 10, 0.12); }
+.lsec__band { display: flex; border: 1px solid rgba(10, 10, 10, 0.12); border-top: 0; }
+.lsec__label { flex: none; width: 34.8rem; padding: 8.8rem 1.2rem 2.4rem; border-right: 1px solid rgba(10, 10, 10, 0.12); }
+.lsec__label .eyebrow { color: rgba(10, 10, 10, 0.85); }
+.lsec__heading {
+  flex: 1; min-width: 0; padding: 8.8rem 11.4rem 6.4rem 14.8rem;
+  display: flex; flex-direction: column; align-items: flex-end; justify-content: center;
+}
+.lsec__heading .display { width: 100%; }
+.lsec__heading--right .display { flex: none; width: 87.1348rem; text-align: right; text-wrap: balance; }
+.lsec__side {
+  flex: none; width: 34.8rem; padding: 4rem 1.2rem; border-right: 1px solid rgba(10, 10, 10, 0.12);
+  display: flex; flex-direction: column; gap: 2.4rem;
+}
+.lsec__side--split { justify-content: space-between; }
+.lsec__cap { font: 400 1.2rem/1.68rem var(--f-mono); letter-spacing: -0.036rem; color: #676767; text-transform: uppercase; }
+/* the design sets these headings white in "difference" blend on the cream; these are the colours that gives */
+.display--ink { color: #13121e; }
+.display--ink .dim { color: #959593; }
+.calc__title .dim { color: #8a8a89; }
+
+/* dark-on-cream button (Replay) */
+.btn--ink { width: 100%; background: none; cursor: pointer; border-color: #0a0a0a; color: #0a0a0a; font-family: var(--f-plex); }
+.btn--ink .btn__fill { background: #0a0a0a; }
+.btn--ink:hover, .btn--ink:focus-visible { color: var(--lime); border-color: #0a0a0a; }
+.btn--ink:focus-visible { outline-color: #0a0a0a; }
+
+/* cpu performance: bars whose handle is a fan that rolls out to each score */
+.perf__foot { display: flex; flex-direction: column; gap: 2.4rem; }
+.perf__note { font: 400 1.6rem/1.34 var(--f-sans); letter-spacing: -0.016rem; color: rgba(10, 10, 10, 0.8); text-wrap: balance; }
+.perf__chart {
+  flex: 1; min-width: 0; list-style: none; background: #e5e6d9; padding: 4rem 0;
+  display: flex; flex-direction: column; align-items: center;
+}
+.prow { --p: var(--to); width: 81.2rem; height: 6.2rem; display: flex; align-items: center; border-bottom: 1px solid rgba(10, 10, 10, 0.2); }
+.prow:last-child { height: 6.1rem; border-bottom: 0; }
+.prow__name {
+  flex: none; width: 12.6rem; margin-right: 1.2rem; white-space: nowrap;
+  font: 500 2rem/1.4 var(--f-sans); letter-spacing: -0.06rem; color: rgba(10, 10, 10, 0.4);
+}
+/* names up to "microsandbox" fit the label column; the track gives up the difference */
+.prow__bar { position: relative; flex: none; width: 54.8rem; height: 5rem; }
+.prow__track, .prow__fill { position: absolute; left: 0; top: 1.49rem; height: 1.8961rem; border-radius: 0.4063rem; }
+.prow__track { width: 100%; background: rgba(10, 10, 10, 0.04); border: 0.1354rem solid rgba(10, 10, 10, 0.16); }
+.prow__fill {
+  width: calc(var(--p) * 100%); overflow: hidden;
+  background: linear-gradient(90deg, rgba(220, 221, 208, 0.5), rgba(107, 108, 99, 0.5));
+}
+/* light ribs over the fill: the gaps show the fill darkening towards its end */
+.prow__fill::after {
+  content: ""; position: absolute; left: 1.084rem; right: 1.06rem; top: 0.135rem; bottom: 0.135rem;
+  background: repeating-linear-gradient(90deg, #dcddd0 0 0.4063rem, transparent 0.4063rem 0.7914rem);
+}
+.prow__fan { position: absolute; top: 0; left: calc(var(--p) * 100% - 1.5rem); width: 5rem; height: 5rem; will-change: transform; }
+.prow__fan img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.prow__val {
+  flex: none; padding-left: 1.914rem; white-space: nowrap; font-variant-numeric: tabular-nums;
+  font: 600 2rem/1.4 var(--f-sans); letter-spacing: -0.06rem; text-transform: uppercase; color: rgba(10, 10, 10, 0.4);
+}
+.prow--ultra .prow__name { color: #0a0a0a; }
+.prow--ultra .prow__val { color: #333332; }
+.prow--ultra .prow__fill { background: linear-gradient(90deg, rgba(165, 186, 33, 0) 5.362%, #a5ba21); }
+.prow--ultra .prow__fan { left: calc(var(--p) * 100% - 2.43rem); }
+/* the lime fan's file carries its glow: 49% of padding on every side */
+.prow--ultra .prow__fan img { left: -49.3%; top: -49.14%; width: 198.6%; height: 198.28%; }
+/* Ultra's fan never stops: it turns on its own (around its centre; the glow is round, so only the blades
+   show it) on top of the roll as the bar grows. 1.4s a turn is ~4° a frame, well under the 33° between
+   its blades, so it reads as a smooth spin rather than a strobe */
+.prow--ultra .prow__fan img { animation: prow-spin 1.4s linear infinite; }
+@keyframes prow-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .prow--ultra .prow__fan img { animation: none; } }
+
+/* calculator: included list */
+.incl { list-style: none; }
+.incl li {
+  position: relative; padding: 1.4rem 2rem 1.4rem 1.9rem; border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+  font: 400 1.6rem/1.34 var(--f-sans); letter-spacing: -0.016rem; color: rgba(10, 10, 10, 0.8);
+}
+.incl li:last-child { border-bottom: 0; }
+.incl li::before { content: ""; position: absolute; left: 0; top: 2.1rem; width: 0.7rem; height: 0.7rem; background: #a5ba21; }
+
+/* calculator: inputs (timeline sliders) + the same fleet at other providers */
+.calc__content { flex: 1; min-width: 0; padding: 4rem 0 4rem 2.4rem; display: flex; align-items: stretch; justify-content: space-between; gap: 2.4rem; }
+.calc__inputs { flex: none; width: 53.3rem; }
+.slider { display: flex; flex-direction: column; gap: 2.8rem; padding: 0.9rem 0; border-bottom: 1px solid rgba(10, 10, 10, 0.08); }
+.slider:nth-child(2) { border-bottom-color: #dedede; }
+.slider:last-child { border-bottom: 0; }
+.slider__label {
+  display: flex; align-items: center; gap: 0.8rem; white-space: nowrap;
+  font: 500 1.6rem/1.2rem var(--f-sans); text-transform: uppercase; color: rgba(10, 10, 10, 0.85);
+}
+.info {
+  flex: none; display: flex; align-items: center; justify-content: center; width: 1.3rem; height: 1.3rem;
+  border: 1px solid rgba(10, 10, 10, 0.4); border-radius: 0.7rem;
+  font: 500 0.8rem/1 var(--f-sans); font-style: normal; text-transform: none; color: rgba(10, 10, 10, 0.6);
+}
+.slider__row { display: flex; align-items: center; justify-content: space-between; }
+.slider__ctl { --w: 34.6rem; position: relative; flex: none; width: 34.8rem; height: 5.6rem; }
+.slider__lbls i {
+  position: absolute; top: 0; left: calc(var(--x) * var(--w)); transform: translateX(-50%);
+  font: 400 1rem/normal var(--f-mono); font-style: normal; color: rgba(10, 10, 10, 0.45); white-space: nowrap;
+  transition: color 0.2s ease;
+}
+.slider__lbls i:first-child { transform: none; }
+.slider__lbls i:last-child { transform: translateX(-100%); }
+.slider__lbls i.is-on { color: #0a0a0a; font-weight: 500; }
+/* ruler: baseline, major ticks at thirds, minor ticks at twelfths */
+.slider__ruler {
+  position: absolute; left: 0; top: 1.6rem; width: calc(var(--w) + 1px); height: 0.7rem;
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.18), rgba(10, 10, 10, 0.18)) 0 0.6rem / var(--w) 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(10, 10, 10, 0.4) 0 1px, transparent 1px calc(var(--w) / 3)) 0 0 / 100% 0.6rem no-repeat,
+    repeating-linear-gradient(90deg, rgba(10, 10, 10, 0.22) 0 1px, transparent 1px calc(var(--w) / 12)) 0 0.3rem / 100% 0.3rem no-repeat;
+}
+.slider__track {
+  position: absolute; left: 0; top: 3rem; width: var(--w); height: 1.4rem; overflow: hidden;
+  background: rgba(10, 10, 10, 0.04); border: 1px solid rgba(10, 10, 10, 0.16); border-radius: 0.3rem;
+}
+.slider__fill { position: absolute; left: -1px; top: -1px; bottom: -1px; width: calc(var(--p) * var(--w)); background: rgba(10, 10, 10, 0.09); border-radius: 0.3rem; }
+/* moved with a transform, not `left`, so it glides at sub-pixel precision instead of snapping pixel to pixel */
+.slider__head {
+  position: absolute; left: 0; top: 1rem; width: 3rem; height: 5.6rem; pointer-events: none;
+  /* --wh: the track's width in px (set by main.js). --w can be a % on narrow screens, and a % inside
+     translateX means the head's own width, which pinned the playhead near the start */
+  transform: translateX(calc(var(--p) * var(--wh, var(--w)) - 1.5rem)); will-change: transform;
+}
+/* pointer input is handled on the whole control (drag anywhere along it); the native range underneath
+   is kept, invisible, for keyboard and screen readers */
+.slider__ctl { cursor: ew-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.slider.is-active .slider__ctl { cursor: grabbing; }
+.slider input {
+  position: absolute; left: -0.9rem; top: 1rem; width: calc(var(--w) + 1.8rem); height: 4.6rem; margin: 0;
+  -webkit-appearance: none; appearance: none; background: transparent; opacity: 0; pointer-events: none;
+}
+.slider input::-webkit-slider-thumb { -webkit-appearance: none; width: 1.8rem; height: 4.4rem; }
+.slider input::-moz-range-thumb { width: 1.8rem; height: 4.4rem; border: 0; }
+.slider__ctl:has(input:focus-visible) .slider__track { outline: 2px solid #0a0a0a; outline-offset: 0.4rem; }
+.slider__out {
+  flex: none; width: 8.4rem; display: flex; justify-content: flex-end; white-space: nowrap;
+  font: 400 1.2rem/normal var(--f-sans); color: rgba(10, 10, 10, 0.6);
+}
+.cmp { flex: none; width: 45.2rem; display: flex; flex-direction: column; background: #e5e6d9; border: 1px solid rgba(10, 10, 10, 0.1); border-right: 0; }
+.cmp__item {
+  flex: 1; min-height: 0; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;
+  border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+}
+.cmp__name { font: 500 1.6rem/normal var(--f-sans); letter-spacing: -0.016rem; text-transform: uppercase; color: rgba(10, 10, 10, 0.75); }
+.cmp__item--ultra .cmp__name { color: #0a0a0a; }
+.cmp__line { display: flex; align-items: center; }
+.cmp__track { position: relative; flex: 1; min-width: 0; height: 0.8rem; background: #d0d0c6; overflow: hidden; }
+.cmp__bar { position: absolute; left: 0; top: 0; height: 100%; width: calc(var(--b, 0.4) * 100%); background: #a5ba21; border-radius: 0.2rem; transition: width 0.6s var(--ease-out); }
+.cmp__cost { flex: none; width: 8.6rem; text-align: right; font: 400 1.6rem/normal var(--f-sans); color: #3f3f3f; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cmp__x { flex: none; width: 4rem; margin-left: 1.2rem; text-align: right; font: 400 1.4rem/normal var(--f-sans); color: rgba(10, 10, 10, 0.5); }
+
+/* calculator: plan table + annual saving */
+/* lined up with the band above: the table spans the sliders' column (53.3rem from the same 2.4rem inset)
+   and the saving card sits flush right like the comparison card, so both edges of each column match */
+.plans { flex: 1; min-width: 0; height: 32rem; padding: 4rem 0 4rem 2.4rem; display: flex; justify-content: space-between; gap: 2.4rem; }
+.plans__card { flex: none; width: 53.3rem; min-width: 0; border: 1px solid rgba(10, 10, 10, 0.1); overflow: hidden; }
+.plans__table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.plans__table th, .plans__table td { padding: 1.4rem 0; text-align: left; font-weight: 400; white-space: nowrap; }
+.plans__table tr > :first-child { padding-left: 2rem; }
+.plans__table thead th { font: 400 1.2rem/1.2rem var(--f-sans); color: rgba(10, 10, 10, 0.6); text-transform: uppercase; border-bottom: 1px solid rgba(10, 10, 10, 0.08); }
+/* five columns (no $/hour), spread wider: size, vCPU, RAM, disk, and $/month in the rest */
+.plans__table thead th:nth-child(1) { width: 13.6rem; }
+.plans__table thead th:nth-child(2) { width: 9.2rem; }
+.plans__table thead th:nth-child(3) { width: 10.2rem; }
+.plans__table thead th:nth-child(4) { width: 10.6rem; }
+.lsec__note { font: 400 1.2rem/1.68rem var(--f-mono); letter-spacing: -0.036rem; color: rgba(10, 10, 10, 0.45); text-transform: uppercase; }
+.saving__calc { font: 400 1.2rem/1.4 var(--f-mono); letter-spacing: -0.036rem; color: rgba(10, 10, 10, 0.5); white-space: normal; }
+.plans__table tbody th { font: 400 1.6rem/1.2rem var(--f-sans); letter-spacing: -0.016rem; text-transform: uppercase; color: rgba(10, 10, 10, 0.85); }
+.plans__table tbody td { font: 400 1.6rem/normal var(--f-mono); color: #0a0a0a; }
+.plans__table tbody tr { cursor: pointer; transition: background-color 0.35s var(--ease-out); }
+.plans__table tbody tr:first-child { border-bottom: 1px solid rgba(10, 10, 10, 0.08); }
+.plans__table tbody tr:hover { background: rgba(10, 10, 10, 0.03); }
+.plans__table tbody tr.is-on { background: #a5ba21; }
+.plans__table tbody tr.is-on td { color: #141414; }
+.saving {
+  flex: none; width: 45.2rem; display: flex; flex-direction: column; justify-content: space-between; white-space: nowrap;
+  background: #e5e6d9; border: 1px solid rgba(10, 10, 10, 0.1); border-right: 0;
+}
+.saving__top { display: flex; flex-direction: column; gap: 1.2rem; padding: 2rem; border-bottom: 1px solid rgba(10, 10, 10, 0.08); }
+.saving__label { display: flex; align-items: center; justify-content: space-between; font: 500 1.6rem/normal var(--f-sans); letter-spacing: -0.016rem; color: #0a0a0a; }
+.saving__vs { font: 400 1.4rem/normal var(--f-sans); letter-spacing: 0; color: rgba(10, 10, 10, 0.5); }
+.saving__value { display: flex; align-items: baseline; gap: 0.8rem; }
+.saving__value b { font: 500 4rem/normal var(--f-sans); letter-spacing: -0.12rem; color: #0a0a0a; font-variant-numeric: tabular-nums; }
+.saving__value span { font: 400 1.6rem/normal var(--f-sans); color: rgba(10, 10, 10, 0.5); }
+.saving__fleet {
+  display: flex; align-items: center; justify-content: space-between; padding: 1.4rem 2rem; border-bottom: 1px solid rgba(10, 10, 10, 0.08);
+  font: 400 1.6rem/normal var(--f-sans); letter-spacing: -0.016rem; text-transform: uppercase; color: rgba(10, 10, 10, 0.85);
+}
+.saving__mo { font-family: var(--f-mono); letter-spacing: 0; text-transform: none; color: #0a0a0a; }
+
+/* partner cards: lime wave canvas under the tiles (drawn in JS, only on the hovered card) */
+.logos__wave { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+/* ---------- 05 why ultra ---------- */
+.why {
+  /* held on screen (desktop pin), the window shows only black: the section is at least a window plus
+     both cream notches (8.4rem each) tall, and the pin (main.js) centres the window on it, so the notches
+     sit just outside. In a window taller than the design, --why-pad keeps the content centred too.
+     A whole number of pixels: the pin spacer that holds this section's place is rounded, and a
+     fractional height left a sub-pixel seam below it through which the fixed footer showed */
+  --why-pad: max(0px, (100vh + 16.8rem + 4px - 100rem) / 2);
+  position: relative; height: round(up, max(100rem, 100vh + 16.8rem + 4px), 1px); overflow: hidden; background: #000;
+  padding: calc(16rem + var(--why-pad)) 2.4rem 16rem; display: flex; flex-direction: column; gap: 5.6rem;
+}
+.why__stage { display: contents; }   /* desktop: its children lay out as the section's own */
+.why__head { flex: none; height: 38.6rem; }
+/* the column runs from the section's 2.4rem padding to the divider at 48.8rem; the text keeps the same
+   2.4rem clear of the divider and is justified, so every full line ends exactly that far from it and
+   the gap reads the same on both sides for all three points (ragged lines ended 33–40px short) */
+.why__body { position: relative; width: 44rem; display: flex; flex-direction: column; gap: 4.8rem; }
+.why__text { width: 44rem; font: 500 1.6rem/1.4 var(--f-sans); letter-spacing: -0.048rem; color: #fff; text-align: justify; hyphens: none; }
+/* the three points stack in a column by default (phones, no JS); on desktop the script lays them over
+   one another in a single cell and switches between them as the pinned section scrolls */
+.why__texts { display: flex; flex-direction: column; gap: 2.4rem; }
+.why__texts.is-stacked { display: grid; }
+.why__texts.is-stacked .why__text { grid-area: 1 / 1; }
+.why__text .ch, .why__text .wd { display: inline; }
+.why__bars { display: flex; gap: 0.4rem; }
+.why__bars span { position: relative; width: 6.5rem; height: 0.2rem; background: rgba(255, 255, 255, 0.5); overflow: hidden; }
+.why__bars i { position: absolute; inset: 0; background: var(--lime-2); transform: scaleX(0); transform-origin: left; }
+.why__bars span:first-child i { transform: scaleX(1); }
+.why__art { position: absolute; left: 29.7rem; top: var(--why-pad); width: 201.2rem; height: 98.6rem; overflow: hidden; }
+
+/* one part per point, lifted out and lit while its point is read (js/why-art.js: .is-lit), in the
+   manner of the problem cards. Coolers: a soft lime halo that breathes, the fins lighting in turn, the
+   top face pulsing warm. RAM: a light running along the sticks. Fans: housings glow, blades turn lime. */
+.why__art [data-part] { will-change: translate; }
+.why__art.is-playing [data-part="cpu"].is-lit { animation: why-cpu 2.4s ease-in-out infinite; animation-delay: calc(var(--k) * -0.4s); }
+@keyframes why-cpu {
+  0%, 100% { filter: drop-shadow(0 0 0.8rem rgba(226, 246, 99, 0.28)); }
+  50% { filter: brightness(1.12) drop-shadow(0 0 2.2rem rgba(226, 246, 99, 0.55)); }
+}
+.why__art.is-playing .is-lit .why-fin { animation: why-fin 1.3s linear infinite; animation-delay: calc(var(--j) * 0.07s); }
+@keyframes why-fin { 0%, 14% { stroke: #F8FFC2; } 38%, 100% { stroke: #9DAE30; } }
+.why__art.is-playing .is-lit .why-top { animation: pill-chip 1.6s ease-in-out infinite; }
+.why__art [data-part="ram"].is-lit { filter: drop-shadow(0 0 1rem rgba(226, 246, 99, 0.22)); }
+.why__art.is-playing [data-part="ram"].is-lit .ram-stick path { animation: why-ram 1.8s linear infinite; animation-delay: calc(var(--j) * 0.11s + var(--k) * 0.3s); }
+@keyframes why-ram { 0%, 12% { stroke: #D0EF0E; } 36%, 100% { stroke: #9A9A9A; } }
+/* fans: the blades stay grey; the light is on the base instead. The footprint each lifted fan leaves
+   on the board fills lime and glows, like the lit board on the problem cards, and breathes */
+.why-base { fill: #D0EF0E; fill-opacity: 0.2; stroke: #D0EF0E; stroke-width: 1px; vector-effect: non-scaling-stroke; }
+.why-ghost.is-lit { filter: drop-shadow(0 0 0.9rem rgba(208, 239, 14, 0.55)); }
+.why__art.is-playing .why-ghost.is-lit .why-base { animation: why-base 2s ease-in-out infinite; animation-delay: calc(var(--k) * 0.14s); }
+@keyframes why-base { 50% { fill-opacity: 0.36; } }
+/* where a lifted cooler or fan sat: its outline, dashed lime, and guides down its corners */
+.why-ghost { opacity: 0; pointer-events: none; }
+.why-ghost__line, .why-guide {
+  fill: none; stroke: #D0EF0E; stroke-opacity: 0.6; stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke;
+}
+/* callouts, 14px: lime node on the part, a white 1px line to the left, lime node, label beyond. Near
+   node pops, line draws out, far node pops, label slides in and decodes; all fold away at once */
+.why-co { position: absolute; inset: 0; pointer-events: none; }
+.why-co__line {
+  position: absolute; height: 1px; margin-top: -0.5px; background: rgba(255, 255, 255, 0.75);
+  transform: scaleX(0); transform-origin: right center; transition: transform 0.45s cubic-bezier(0.6, 0, 0.2, 1);
+}
+.why-co__node {
+  position: absolute; width: 6px; height: 6px; margin: -3px 0 0 -3px; background: #D0EF0E;
+  opacity: 0; transform: scale(0.4); transition: opacity 0.2s ease, transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.why-co__tag {
+  position: absolute; white-space: nowrap; color: #fff; text-transform: uppercase;
+  font: 400 14px/normal var(--f-plex); letter-spacing: 0.08em;
+  opacity: 0; transform: translate(calc(-100% + 0.6rem), -50%); transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.why-co.is-on .why-co__node--near { opacity: 1; transform: scale(1); }
+.why-co.is-on .why-co__line { transform: scaleX(1); transition-delay: 120ms; }
+.why-co.is-on .why-co__node--far { opacity: 1; transform: scale(1); transition-delay: 450ms; }
+.why-co.is-on .why-co__tag { opacity: 0.85; transform: translate(-100%, -50%); transition-delay: 520ms; }
+@media (prefers-reduced-motion: reduce) {
+  .why__art [data-part], .why__art [data-part] * { animation: none !important; }
+  .why-co * { transition: none !important; }
+}
+/* pieces inlined by js/why-art.js (RAM banks, fan rotors) take the <img>'s place */
+.pc > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.pc__b > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- 06 partners ---------- */
+.partners { position: relative; background: var(--cream); color: #000; padding: 6rem 2.4rem 10rem; }
+/* the Why section clips its bottom notch's overhang, so at this join (a fractional y) neither section
+   fully covers the shared pixel row and the sticky footer behind the page showed through as a faint
+   dashed line; a cream strip over the join, as wide as the notch's edge, closes it */
+.partners::before {
+  content: ""; position: absolute; left: 0; top: -2px; width: min(46.4rem, 100%); height: 3px; background: var(--cream); pointer-events: none;
+}
+.partners .sec-head__title .display { text-wrap: pretty; }
+.logos { position: relative; display: flex; height: 31.5rem; }
+.tile {
+  position: relative; z-index: 1; flex: 1; min-width: 0; padding: 1.2rem; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+  border-top: 1px solid var(--line-dark); border-bottom: 1px solid var(--line-dark); border-left: 1px solid var(--line-dark);
+}
+.tile--last { border-right: 1px solid var(--line-dark); }
+.tile__top {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 400 1.2rem/1.6rem var(--f-sans); text-transform: uppercase; color: rgba(0, 0, 0, 0.8); white-space: nowrap;
+}
+.tile__top--mono { font-family: var(--f-mono); }
+.tile__tag { display: flex; align-items: center; gap: 0.4rem; }
+.tile__tag::before, .tile__tag::after { content: ""; width: 1px; height: 1rem; background: rgba(0, 0, 0, 0.6); }
+.tile__brand { display: flex; align-items: center; gap: 1.2rem; }
+.tile:nth-child(2) .tile__brand img { width: 3rem; height: 2.93878rem; }
+.tile:nth-child(3) .tile__brand img { width: 9.03059rem; height: 2.8rem; }
+.tile:nth-child(4) .tile__brand img { width: 3rem; height: 3rem; }
+.tile:nth-child(5) .tile__brand img { width: 3rem; height: 3.00011rem; }
+.tile__name { width: 18.9704rem; font: 500 3.513rem/1 var(--f-mono); text-transform: uppercase; white-space: nowrap; }
+.tile:focus-visible { outline: 2px solid #000; outline-offset: -4px; }
+
+/* ---------- 07 cta ---------- */
+.cta { position: relative; background: #000; padding: 0 2.4rem; }
+/* black notch hanging off the CTA's bottom edge, over the top of the fixed footer */
+.cta__notch { position: absolute; left: 0; right: 0; top: 100%; height: 9.6rem; pointer-events: none; }
+.cta__notch-a, .cta__notch-b { position: absolute; display: block; }
+.cta__notch-a { left: 37rem; top: -0.1rem; width: 85.7rem; height: 9.6rem; }
+.cta__notch-b { left: 0; top: 0; width: 37.229rem; height: 9.6rem; }
+.cta__grid { position: relative; overflow: hidden; display: flex; flex-direction: column; border: 1px solid var(--line-soft); }
+.cta__bg { position: absolute; left: 34.7rem; top: -0.1rem; width: 106.8rem; height: 80rem; overflow: hidden; pointer-events: none; }
+.cta__bg-in { position: absolute; inset: 0; }
+.cta__layer { position: absolute; inset: 0; overflow: hidden; }
+.cta__dim { background: rgba(0, 0, 0, 0.2); }
+.cta__img1 { position: absolute; height: 100%; left: -19.55%; top: -0.06%; width: 136.23%; }
+.cta__img2 { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cta__img3 { position: absolute; height: 100%; left: -17.71%; top: 0; width: 133.17%; }
+.cta__shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+/* same placement as the 1920×1080 export it replaces: 800px tall, nudged 17.71% left */
+/* live CTA field: from the art column's left edge to the grid's right border, and down through the
+   black notch (80rem art + 9.7rem notch); the polygon follows the notch's diagonal end, so the pattern
+   stops exactly where the lime footer begins */
+.cta__grid { z-index: 2; }
+.cta__notch { z-index: 0; }
+.cta__field {
+  position: absolute; z-index: 1; left: 37.2rem; top: 0; width: 104.4rem; height: 89.8rem;
+  overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.6s ease;
+  clip-path: polygon(0 0.1rem, 104.3rem 0.1rem, 104.3rem 80.1rem, 85.55rem 80.1rem, 76.586rem 89.75rem, 0 89.75rem);
+}
+.cta__field.is-live { opacity: 1; }
+.cta__field .glyph-live { left: 0; top: 0; width: 100%; height: 100%; opacity: 1; }
+.cta__field .cta__shade { position: absolute; left: 0; top: 0; width: 106.8rem; height: 100%; }
+.cta__field .cta__fade { top: 0; bottom: auto; height: 100%; }
+.cta__field .cta__fade span { width: 89.8rem; }
+.cta__field .cta__glow { inset: -22.4rem -33.47rem 9.216rem 43.24rem; }
+.cta:has(.cta__field.is-live) .cta__bg { visibility: hidden; }
+.cta__fade { position: absolute; left: 0; bottom: 0; width: 100.659rem; height: 80rem; display: flex; align-items: center; justify-content: center; }
+.cta__fade span {
+  flex: none; width: 80rem; height: 100.659rem; transform: rotate(-90deg); filter: blur(2.2rem);
+  background: linear-gradient(121.511deg, #000 1.3774%, rgba(0, 0, 0, 0.61) 41.443%, rgba(0, 0, 0, 0) 62.393%);
+}
+.cta__glow {
+  position: absolute; inset: -28% -29.09% -0.73% 40.49%;
+  display: flex; align-items: center; justify-content: center; mix-blend-mode: overlay;
+}
+.cta__glow .rot { width: 34.685rem; height: 105.53rem; transform: rotate(-139.78deg); }
+.cta__top { position: relative; display: flex; height: 40rem; border-bottom: 1px solid var(--line-soft); }
+.cta__lead {
+  flex: none; width: 34.8rem; height: 40rem; padding: 2.4rem 1.2rem 0; overflow: hidden;
+  display: flex; flex-direction: column; gap: 2rem; border-right: 1px solid var(--line-soft);
+}
+.cta__text { font: 400 1.6rem/1.3 var(--f-sans); letter-spacing: -0.016rem; color: rgba(255, 255, 255, 0.85); }
+.cta__bottom { position: relative; display: flex; height: 40rem; padding-left: 35.4rem; }
+.cta__action { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 4rem; padding: 4.8rem 2.4rem 2.4rem; }
+.cta__title {
+  font-family: var(--f-display); font-weight: 500; font-size: 5.6rem; line-height: 1.1;
+  letter-spacing: -0.224rem; text-transform: uppercase; color: #fff;
+}
+
+/* ---------- 08 footer ---------- */
+/* fixed footer: it sticks to the viewport bottom underneath the page,
+   and everything above (main, z-index 2) slides up off it like a sheet */
+/* black behind the page's sections: wherever two sections meet at a fractional pixel, or a pinned section
+   leaves its spacer empty (the GPU hold on tablet, shorter than the screen), the sticky lime footer
+   underneath showed through, as a lime band or a lime hairline with bits of its links */
+main { position: relative; z-index: 2; background: #000; }
+.footer {
+  position: sticky; bottom: 0; z-index: 1;
+  background: var(--lime); color: #111; padding: 10rem 0 4.4rem; overflow: hidden;
+}
+.footer__main { position: relative; display: flex; flex-direction: column; gap: 2rem; padding: 4rem 2.4rem 0; }
+.footer__box { display: flex; height: 73.4rem; border: 1px solid rgba(17, 17, 17, 0.3); }
+/* desktop: the footer is exactly one screen tall; the bordered box takes whatever height is left (its
+   brand column and links are pinned to its top and bottom edges, so they spread with it) */
+@media (min-width: 901px) {
+  .footer { height: 100vh; display: flex; flex-direction: column; }
+  .footer__main { flex: 1; min-height: 0; }
+  .footer__box { flex: 1; min-height: 0; height: auto; }
+}
+.footer__brand { flex: none; width: 61.2rem; display: flex; flex-direction: column; gap: 3.6rem; padding: 2.4rem 0 3.6rem 2.4rem; overflow: hidden; }
+.footer__brand-top { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 3.6rem; }
+.footer__title { width: 100%; }
+.footer__btn-wrap { padding-right: 3.2rem; }
+.footer__logo { width: 26.8rem; height: 26rem; }
+.footer__nav {
+  flex: 1; min-width: 0; padding: 10.4rem 2.4rem 2.4rem;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  border-left: 1px solid rgba(17, 17, 17, 0.3);
+}
+.footer__cols { display: flex; align-items: flex-start; gap: 2.4rem; }
+.footer__col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1.2rem; }
+.flink {
+  position: relative; display: flex; align-items: flex-start; height: 4rem; padding-top: 1.2rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.35);
+  font: 500 2rem/2.4rem var(--f-mono); text-transform: uppercase; color: #111; white-space: nowrap;
+}
+.flink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: #111;
+  transform: scaleX(0); transform-origin: right; transition: transform 0.6s var(--ease-io);
+}
+.flink__t { display: inline-block; }
+.flink:hover::after, .flink:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+.flink:focus-visible { outline: none; }
+.footer__legal { font: 500 1.2rem/1.6rem var(--f-mono); text-transform: uppercase; color: #111; }
+
+/* =========================================================
+   Tablet / mobile — the design is a 1440 desktop frame;
+   below 900px sections fall back to a stacked flow layout.
+   ========================================================= */
+@media (max-width: 900px) {
+  html { font-size: clamp(8.5px, 2.5641vw, 11px); }
+
+  .ln, .node, .hero__glow, .hero__bar, .gpu__side, .gpu__glow { display: none; }
+
+  .nav__inner { padding: 0 1.2rem; }
+  .nav__link { padding: 0 1.4rem; font-size: 1.3rem; }
+  /* five section links are wider than a phone: the row scrolls sideways beside the logo (no scrollbar) */
+  .nav__links { flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+  .nav__link { flex: none; }   /* each link keeps its full name; the row scrolls instead of squeezing them */
+  .nav__links::-webkit-scrollbar { display: none; }
+
+  .hero { height: auto; display: flex; flex-direction: column; gap: 2.4rem; padding: 2.4rem 1.6rem 4rem; }
+  .hero > * { position: relative !important; left: auto !important; top: auto !important; }
+  .hero__mark { width: 100%; height: auto; aspect-ratio: 1020 / 146; }
+  .hero__coords { width: auto; padding: 0; align-self: flex-end; }
+  .hero__pattern { width: calc(100% + 3.2rem); margin: 0 -1.6rem; height: auto; aspect-ratio: 1067 / 538; order: 3; }
+  .hero__cta { width: 100%; order: 4; }
+  .hero__info { width: auto; order: 5; flex-direction: row; align-items: flex-end; justify-content: space-between; }
+
+  .gpu { height: auto; padding: 4rem 1.6rem 2rem; }
+  .gpu__spec { position: relative; left: auto; top: auto; padding: 0; }
+  .gpu__stage { position: relative; left: auto; top: auto; width: 100%; height: auto; margin-top: 2.4rem; }
+  .gpu__title { position: relative; left: auto; top: auto; width: 100%; font-size: 2.8rem; letter-spacing: -0.1rem; }
+  .gpu__fig { position: relative; left: auto; top: auto; margin: 2rem auto 0; zoom: 0.8; }
+  /* tablet / phone: callout labels scale with the drawing (rem, inside its zoom), so they keep the same
+     size against it as the 12px labels on desktop */
+  .gpu__lbl { font-size: 1.2rem; }
+
+  .stats { height: auto; }
+  .stats__wrap { position: relative; left: auto; right: auto; flex-direction: column; padding: 0 1.6rem 4rem; }
+  .stats__lead { padding: 4rem 0 2rem; }
+  .stats__grid { width: 100%; height: auto; padding: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; border-left: 1px solid var(--line-soft); }
+  .stat { min-height: 20rem; }
+  /* no hover on the number cards here: no tint, no turning icon, no glyph glow */
+  .stat:hover { background-color: transparent; }
+  .stat:hover .stat__icon { transform: none; }
+  .stat__glow { display: none; }
+  .stat:nth-child(-n + 3) { border-top: 0; }
+  .stat:nth-child(-n + 2) { border-top: 1px solid var(--line-soft); }
+  .stat__value { font-size: 4rem; }
+
+  .problem { padding: 0 1.6rem 12rem; align-items: stretch; }
+  .sec-head { flex-direction: column; }
+  .sec-head__lead { width: auto; padding: 4rem 1.2rem 1.2rem; border-right: 0; }
+  .sec-head__title { width: auto; padding: 1.2rem 1.2rem 4rem; border-left: 1px solid var(--line); }
+  .sec-head--light .sec-head__title { border-left-color: rgba(255, 255, 255, 0.2); }
+  .sec-head .display, .display { width: auto; font-size: 3rem; letter-spacing: -0.1rem; }
+  .pcards.is-stacking .pcard { position: relative; top: auto; }
+  .pcard__in { flex-direction: column; }
+  .pcard__main { flex-direction: column; }
+  .pcard__num { width: auto; padding: 1.6rem 1.2rem; border-bottom: 1px solid var(--line); }
+  .pcard__art { height: 32rem; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  /* the drawing shrinks so its callouts (which reach past it on both sides) stay inside the card;
+     labels scale with the drawing, as on desktop (1.2rem inside its zoom) */
+  /* stacked card: the art keeps its own height (flex: 1 in a column would shrink it to the drawing,
+     leaving the parts and callouts against the card edges); the drawing fills it with room around */
+  .pcard__art { flex: none; height: 38rem; }
+  .pill { zoom: 0.9; }
+  .pco__tag { font-size: 1.2rem; }
+  .pcard__copy { width: auto; gap: 3.2rem; padding: 2.4rem 1.6rem; border-top: 1px solid var(--line); }
+  .pcard__title, .pcard__text, .pcard__text--wide { width: auto; }
+  .pcard__title { font-size: 2.6rem; }
+  .btn, .btn--sm { width: 100%; }
+
+  .lsec { padding: 4rem 1.6rem 6rem; }
+  .lsec__head, .lsec__band { flex-direction: column; }
+  .lsec__label, .lsec__side { width: auto; padding: 2rem 1.2rem; border-right: 0; border-bottom: 1px solid rgba(10, 10, 10, 0.12); }
+  .lsec__heading { padding: 2rem 1.2rem 4rem; align-items: flex-start; }
+  .lsec__heading--right .display { width: auto; text-align: left; }
+  .lsec__heading .ind { display: none; }
+  /* chart: desktop's proportions (the fan about a tenth of the bar, the track a little under half the
+     fan), scaled to the narrower row */
+  .perf__chart { padding: 2rem 1.2rem; }
+  .prow { width: 100%; height: 5.6rem; }
+  .prow__name { width: 11rem; margin-right: 1rem; font-size: 1.6rem; }
+  .prow__bar { flex: 1; min-width: 0; width: auto; height: 4.2rem; }
+  .prow__track, .prow__fill { top: 1.25rem; height: 1.6rem; }
+  .prow__fan { width: 4.2rem; height: 4.2rem; }
+  .prow__val { padding-left: 1.4rem; font-size: 1.6rem; }
+  .calc__content { flex-direction: column; padding: 2rem 1.2rem; }
+  .calc__inputs { width: auto; }
+  .slider__ctl { --w: calc(100% - 0.2rem); flex: 1; width: auto; }
+  .slider__out { width: 10rem; }
+  .cmp { width: auto; border-right: 1px solid rgba(10, 10, 10, 0.1); }
+  .cmp__item { gap: 1.2rem; }
+  .plans { height: auto; flex-direction: column; padding: 2rem 1.2rem; }
+  .plans__card { width: auto; overflow-x: auto; }   /* scrolls sideways only if a screen is narrower still */
+  /* five columns fit a phone's card: the size column fixed, the other four share the rest */
+  .plans__table thead th:nth-child(1) { width: 13rem; }
+  .plans__table thead th:nth-child(n + 2) { width: auto; }
+  .plans__table { min-width: 30rem; }
+  .plans__table tbody th, .plans__table tbody td { font-size: 1.4rem; }
+  .saving { width: auto; border-right: 1px solid rgba(10, 10, 10, 0.1); }
+  .why { --why-pad: 0px; height: auto; padding: 0 1.6rem 8rem; gap: 0; }
+  .why__stage { display: flex; flex-direction: column; gap: 3.2rem; padding: 14rem 0 8rem; }
+  /* points switching in place (main.js adds .why--switch when the screen is tall enough): the stage
+     stays on screen (sticky) for 2.2 screens of scrolling while the timeline runs. overflow: clip, not
+     hidden, or the section would become the sticky's scroll box and it would never stick */
+  .why.why--switch { overflow: clip; }
+  .why.why--switch::after { content: ""; display: block; height: 220vh; }
+  .why--switch .why__stage { position: sticky; top: 0; padding: 9rem 0 3rem; }
+  /* the cream notches scale down with the screen instead of running past it (they pushed phones' pages
+     ~70px wider than the screen, so the whole page could be dragged sideways) */
+  .notch { max-width: 100%; height: auto; }
+  .why__head { height: auto; }
+  .why__body { width: auto; }
+  .why__text { width: auto; text-align: left; }
+  /* the server large, its front corner a tenth of the way in and its back running off the right edge:
+     about two thirds of it in view (chassis 1.5× the column wide, its front at 10%) */
+  /* (the frame's empty bottom strip, 138 of its 986 units, is pulled back with a negative margin; the
+     chassis' back walls and the PSU reach 65 units above the frame, so here the frame doesn't clip and
+     a top margin makes room for them: no hard cut across the top of the server) */
+  /* sized by --aw (its width as a multiple of the column; main.js lowers it if the held block would be
+     taller than the screen) with the margins in proportion, and --front (where its front corner sits) */
+  .why { --aw: 2.1; --front: 10%; }
+  .why__art {
+    position: relative; left: auto; top: auto; height: auto; aspect-ratio: 2012 / 986; order: 3; overflow: visible;
+    width: calc(var(--aw) * 100%);
+    margin: calc(var(--aw) * 3.23%) 0 calc(var(--aw) * -6.86%) calc(var(--front) - var(--aw) * 15.21%);
+  }
+  /* callouts here: labels sized with the drawing (14px at desktop scale, never under 9px) and wrapped
+     right-aligned rather than run past the left edge (js/why-art.js sets --art-k and --tag-max) */
+  .why-co__tag {
+    font-size: max(9px, calc(14px * var(--art-k, 1))); line-height: 1.25;
+    white-space: normal; width: max-content; max-width: var(--tag-max, none); text-align: right;
+  }
+
+  .partners { padding: 4rem 1.6rem 8rem; }
+  .logos { height: auto; flex-wrap: wrap; }
+  .tile { flex: 0 0 50%; height: auto; aspect-ratio: 1; }   /* square tiles, two to a row */
+  .tile:nth-child(n + 4) { border-top: 0; }
+  .tile:nth-child(odd) { border-right: 1px solid var(--line-dark); }
+  .tile__name { width: auto; font-size: 2.4rem; }
+
+  .cta { padding: 0 1.6rem; }
+  .cta__bg { left: 0; width: 100%; height: 100%; }
+  .cta__field { left: 1.6rem; width: calc(100% - 3.2rem); height: 100%; clip-path: inset(0.1rem); }
+  .cta__top { height: auto; }
+  /* flex: 1 + min-width 0, so the sentence wraps to the column (as a fixed-basis item it took its one-line
+     width, 454px on a phone, and ran off the screen) */
+  .cta__lead { flex: 1 1 auto; min-width: 0; width: auto; height: auto; padding: 1.6rem 1.2rem 6rem; border-right: 0; }
+  .cta__bottom { height: auto; padding-left: 0; }
+  .cta__action { padding: 10rem 1.2rem 2rem; }
+  .cta__title { font-size: 3.4rem; letter-spacing: -0.12rem; }
+
+  .footer { padding-top: 9.6rem; }
+  .cta__notch-a { width: calc(100% - 37rem); }
+  .footer__main { padding: 3rem 1.6rem 0; }
+  .footer__box { flex-direction: column; height: auto; }
+  .footer__brand { width: auto; padding: 2rem 1.6rem; }
+  .footer__logo { width: 13.4rem; height: 13rem; }
+  .footer__nav { padding: 2rem 1.6rem; border-left: 0; border-top: 1px solid rgba(17, 17, 17, 0.3); }
+  .footer__cols { flex-wrap: wrap; gap: 1.2rem 2rem; }
+  .footer__col { flex: 1 1 40%; }
+  .flink { font-size: 1.6rem; }
+}
+
+/* tablets: the server large, its front corner 14% of the way in, its back running off the right; the
+   spacing in the held block is a little tighter so it still fits a portrait tablet's screen */
+@media (min-width: 601px) and (max-width: 900px) {
+  /* hero: fills the first screen under the nav, the wordmark a little lower; the pattern takes the free
+     space evenly above and below it, so the next section's spec text starts on the next screen */
+  .hero { min-height: calc(100vh - 5.5rem); min-height: calc(100svh - 5.5rem); padding-top: 4.8rem; }
+  .hero__pattern { margin: auto -1.6rem; }
+  /* GPU section: one screen tall with its content (spec text first) centred, so while it holds the
+     statement and drawing sit in the middle, no empty band above */
+  .gpu { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+  .why { --aw: 2.05; --front: 14%; }
+  .why__stage { gap: 2.6rem; }
+  .why__body { gap: 3.6rem; }
+}
+
+@media (max-width: 600px) {
+  .pcard__art { height: 26rem; }
+  .pill { zoom: 0.56; }   /* the drawing and its callouts fit a 375px card */
+  .plans__table thead th:nth-child(1) { width: 9.6rem; }   /* narrower size column: all five fit a phone's card */
+  /* chart rows stack: name and score on one line, the bar full width beneath with a smaller fan, so
+     the bar keeps a desktop-like length against its fan */
+  .prow { flex-wrap: wrap; height: auto; padding: 1.2rem 0 0.4rem; }
+  .prow:last-child { height: auto; }
+  .prow__name { flex: 1; width: auto; margin: 0; font-size: 1.4rem; }
+  .prow__val { padding-left: 0; font-size: 1.4rem; }
+  .prow__bar { order: 3; flex: 0 0 100%; height: 3.4rem; margin-top: 0.4rem; }
+  .prow__track, .prow__fill { top: 1.05rem; height: 1.3rem; border-radius: 0.3rem; }
+  .prow__fan { width: 3.4rem; height: 3.4rem; }
+  .nav__link { padding: 0 1.1rem; }
+  /* scaled with the drawing like everywhere else, but never under 8px on screen */
+  .pco__tag { font-size: max(1.2rem, calc(8px / 0.56)); }
+
+  /* ---- phone type scale and spacing: headings and figures a step down from the tablet sizes (they
+     ran 27–38px on a 375px screen), long paragraphs a touch smaller, section padding tightened ---- */
+  .sec-head .display, .display { font-size: 2.4rem; letter-spacing: -0.08rem; }
+  .gpu__title { font-size: 2.2rem; letter-spacing: -0.08rem; }
+  .pcard__title { font-size: 2.1rem; letter-spacing: -0.08rem; }
+  .cta__title { font-size: 2.6rem; letter-spacing: -0.09rem; }
+  .stat { min-height: 15rem; }
+  .stat__value { font-size: 3rem; letter-spacing: -0.1rem; }
+  .saving__value b { font-size: 3.2rem; }
+  .pcard__text, .perf__note, .why__text, .incl li, .cta__text { font-size: 1.5rem; }
+  /* partner tiles: name and mark scaled to the half-width tile (SERVER ran past its edge) */
+  .tile__name { font-size: 1.8rem; }
+  .tile__brand { gap: 0.8rem; }
+  .tile:nth-child(2) .tile__brand img { width: 2.4rem; height: 2.351rem; }
+  .tile:nth-child(3) .tile__brand img { width: 7.226rem; height: 2.24rem; }
+  .tile:nth-child(4) .tile__brand img, .tile:nth-child(5) .tile__brand img { width: 2.4rem; height: 2.4rem; }
+
+  .sec-head__lead { padding: 3.2rem 1.2rem 1.2rem; }
+  .sec-head__title { padding: 1.2rem 1.2rem 3.2rem; }
+  .problem { padding-bottom: 6rem; }
+  .pcard__copy { gap: 2.4rem; }
+  .lsec { padding: 3.2rem 1.6rem 4.8rem; }
+  .lsec__heading { padding: 1.6rem 1.2rem 3.2rem; }
+  .partners { padding: 3.2rem 1.6rem 6rem; }
+  .cta__lead { padding-bottom: 4rem; }
+  .cta__action { padding: 6.4rem 1.2rem 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}

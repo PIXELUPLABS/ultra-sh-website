@@ -1,0 +1,10 @@
+# local editor / tool settings
+.claude/
+.vscode/
+.idea/
+# packaged copies of the site
+*.zip
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
